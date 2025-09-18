@@ -1,0 +1,53 @@
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:11.834Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:11.834Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:11.838Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:11.960Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:11.973Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:18.605Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:18.608Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:18.608Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:18.676Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:18.692Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:23.877Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:23.881Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:23.883Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:23.938Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:23.939Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:33.550Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:00:55:41 +0000] \"GET /health HTTP/1.1\" 200 56 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:41.472Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:00:55:47 +0000] \"POST /auth/register HTTP/1.1\" 201 513 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:47.281Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:59.835Z"}
+{"level":"info","message":"Cleared existing data","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:59.849Z"}
+{"level":"info","message":"Created categories","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:59.857Z"}
+{"_message":"Product validation failed","errors":{"slug":{"kind":"required","message":"Path `slug` is required.","name":"ValidatorError","path":"slug","properties":{"message":"Path `slug` is required.","path":"slug","type":"required"}}},"level":"error","message":"Seed error: Product validation failed: slug: Path `slug` is required.","service":"veggiefresh-api","stack":"ValidationError: Product validation failed: slug: Path `slug` is required.\n    at model.Document.invalidate (/Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/document.js:3219:32)\n    at /Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/document.js:3012:17\n    at /Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/schematype.js:1368:9\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-18T00:55:59.863Z"}
+{"level":"info","message":"Disconnected from MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:55:59.869Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:04.948Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:04.948Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:04.951Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:04.990Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:05.005Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:05.022Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:11.044Z"}
+{"level":"info","message":"Cleared existing data","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:11.058Z"}
+{"level":"info","message":"Created categories","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:11.066Z"}
+{"_message":"Product validation failed","errors":{"slug":{"kind":"required","message":"Path `slug` is required.","name":"ValidatorError","path":"slug","properties":{"message":"Path `slug` is required.","path":"slug","type":"required"}}},"level":"error","message":"Seed error: Product validation failed: slug: Path `slug` is required.","service":"veggiefresh-api","stack":"ValidationError: Product validation failed: slug: Path `slug` is required.\n    at model.Document.invalidate (/Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/document.js:3219:32)\n    at /Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/document.js:3012:17\n    at /Users/ayush/Downloads/flutter-pro/veggies_backend/node_modules/mongoose/lib/schematype.js:1368:9\n    at processTicksAndRejections (node:internal/process/task_queues:85:11)","timestamp":"2025-09-18T00:56:11.072Z"}
+{"level":"info","message":"Disconnected from MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:11.075Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.845Z"}
+{"level":"info","message":"Cleared existing data","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.858Z"}
+{"level":"info","message":"Created categories","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.871Z"}
+{"level":"info","message":"Created products","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.881Z"}
+{"level":"info","message":"Seed data created successfully!","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.881Z"}
+{"level":"info","message":"Created 5 categories and 8 products","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.881Z"}
+{"level":"info","message":"Disconnected from MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:52.886Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:00:56:58 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T00:56:58.109Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.290Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.293Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.294Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.316Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.317Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T00:57:08.335Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-09-18T01:00:30.115Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-09-18T01:00:30.117Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:01:00:49 +0000] \"GET /health HTTP/1.1\" 200 56 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T01:00:49.529Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:01:00:55 +0000] \"POST /auth/register HTTP/1.1\" 201 516 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T01:00:55.028Z"}
+{"level":"info","message":"::1 - - [18/Sep/2025:01:00:59 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"curl/8.7.1\"","service":"veggiefresh-api","timestamp":"2025-09-18T01:00:59.789Z"}

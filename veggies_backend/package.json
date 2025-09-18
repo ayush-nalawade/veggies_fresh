@@ -1,0 +1,45 @@
+{
+  "name": "veggiefresh-api",
+  "version": "1.0.0",
+  "description": "Vegetable marketplace API with Flutter frontend",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "seed": "ts-node src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "zod": "^3.22.4",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^6.10.0",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "razorpay": "^2.9.2",
+    "dotenv": "^16.3.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/cors": "^2.8.13",
+    "@types/passport": "^1.0.12",
+    "@types/passport-google-oauth20": "^2.0.11",
+    "@types/passport-jwt": "^3.0.9",
+    "@types/morgan": "^1.9.4",
+    "typescript": "^5.1.6",
+    "ts-node-dev": "^2.0.0"
+  },
+  "keywords": ["vegetable", "marketplace", "api", "nodejs", "express", "mongodb"],
+  "author": "VeggieFresh Team",
+  "license": "MIT"
+}
