@@ -13,6 +13,11 @@ import '../features/cart/screens/cart_screen.dart';
 import '../features/checkout/screens/checkout_screen.dart';
 import '../features/orders/screens/orders_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
+import '../features/profile/screens/edit_profile_screen.dart';
+import '../features/profile/screens/address_list_screen.dart';
+import '../features/profile/screens/add_edit_address_screen.dart';
+import '../models/user.dart';
+import '../models/address.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -80,6 +85,26 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
           ),
+          GoRoute(
+            path: '/profile/edit',
+            builder: (context, state) => EditProfileScreen(
+              user: state.extra as User,
+            ),
+          ),
+          GoRoute(
+            path: '/profile/addresses',
+            builder: (context, state) => const AddressListScreen(),
+          ),
+          GoRoute(
+            path: '/profile/addresses/add',
+            builder: (context, state) => const AddEditAddressScreen(),
+          ),
+          GoRoute(
+            path: '/profile/addresses/edit',
+            builder: (context, state) => AddEditAddressScreen(
+              address: state.extra as Address,
+            ),
+          ),
         ],
       ),
       GoRoute(
@@ -89,82 +114,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class AppRouter {
-  static final router = GoRouter(
-    initialLocation: '/splash',
-    redirect: (context, state) async {
-      const storage = FlutterSecureStorage();
-      final token = await storage.read(key: 'access_token');
-      final isAuthRoute = state.uri.path.startsWith('/auth');
-      
-      if (token == null && !isAuthRoute && state.uri.path != '/splash') {
-        return '/auth/login';
-      }
-      
-      if (token != null && isAuthRoute) {
-        return '/home';
-      }
-      
-      return null;
-    },
-    routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      GoRoute(
-        path: '/auth/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/auth/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
-      ShellRoute(
-        builder: (context, state, child) => MainShell(child: child),
-        routes: [
-          GoRoute(
-            path: '/home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/categories',
-            builder: (context, state) => const CategoryScreen(),
-          ),
-          GoRoute(
-            path: '/products/:categoryId',
-            builder: (context, state) => ProductListScreen(
-              categoryId: state.pathParameters['categoryId']!,
-            ),
-          ),
-          GoRoute(
-            path: '/product/:productId',
-            builder: (context, state) => ProductDetailScreen(
-              productId: state.pathParameters['productId']!,
-            ),
-          ),
-          GoRoute(
-            path: '/cart',
-            builder: (context, state) => const CartScreen(),
-          ),
-          GoRoute(
-            path: '/orders',
-            builder: (context, state) => const OrdersScreen(),
-          ),
-          GoRoute(
-            path: '/profile',
-            builder: (context, state) => const ProfileScreen(),
-          ),
-        ],
-      ),
-      GoRoute(
-        path: '/checkout',
-        builder: (context, state) => const CheckoutScreen(),
-      ),
-    ],
-  );
-}
 
 class MainShell extends StatelessWidget {
   final Widget child;

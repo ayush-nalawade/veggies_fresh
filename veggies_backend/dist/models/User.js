@@ -36,16 +36,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const addressSchema = new mongoose_1.Schema({
+    type: { type: String, enum: ['home', 'work', 'other'], required: true, default: 'home' },
+    name: { type: String, required: true },
     line1: { type: String, required: true },
     line2: { type: String },
     city: { type: String, required: true },
     state: { type: String, required: true },
     pincode: { type: String, required: true },
-    phone: { type: String, required: true }
+    country: { type: String, required: true, default: 'India' },
+    isDefault: { type: Boolean, default: false }
 });
 const userSchema = new mongoose_1.Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
+    phone: { type: String },
     googleId: { type: String, sparse: true },
     passwordHash: { type: String },
     avatarUrl: { type: String },

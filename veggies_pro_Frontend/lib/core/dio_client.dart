@@ -20,6 +20,9 @@ class DioClient {
       },
     ));
 
+    // Debug logging
+    print('DioClient initialized with base URL: ${Env.apiBase}');
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -30,6 +33,10 @@ class DioClient {
           handler.next(options);
         },
         onError: (error, handler) async {
+          print('DioClient error: ${error.message}');
+          print('Error type: ${error.type}');
+          print('Response: ${error.response?.data}');
+          
           if (error.response?.statusCode == 401) {
             // Token expired, try to refresh
             final refreshToken = await _storage.read(key: 'refresh_token');

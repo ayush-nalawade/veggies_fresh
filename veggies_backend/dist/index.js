@@ -16,6 +16,7 @@ const products_1 = __importDefault(require("./routes/products"));
 const cart_1 = __importDefault(require("./routes/cart"));
 const checkout_1 = __importDefault(require("./routes/checkout"));
 const orders_1 = __importDefault(require("./routes/orders"));
+const profile_1 = __importDefault(require("./routes/profile"));
 const errorHandler_1 = require("./middlewares/errorHandler");
 const logger_1 = require("./utils/logger");
 // Load environment variables
@@ -40,14 +41,19 @@ const corsOptions = {
             'http://127.0.0.1:3001',
             'http://127.0.0.1:8080',
             'http://127.0.0.1:8081',
+            'http://192.168.0.7:3000', // Android emulator
+            'http://10.0.2.2:3000', // Android emulator alternative
             process.env.FRONTEND_URL
         ].filter(Boolean); // Remove undefined values
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         }
         else {
-            // For development, allow any localhost origin
-            if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            // For development, allow any localhost origin and common development IPs
+            if (origin.includes('localhost') ||
+                origin.includes('127.0.0.1') ||
+                origin.includes('192.168.') ||
+                origin.includes('10.0.2.2')) {
                 callback(null, true);
             }
             else {
@@ -80,6 +86,7 @@ app.use('/products', products_1.default);
 app.use('/cart', cart_1.default);
 app.use('/checkout', checkout_1.default);
 app.use('/orders', orders_1.default);
+app.use('/profile', profile_1.default);
 // Health check
 app.get('/health', (req, res) => {
     res.json({ success: true, message: 'VeggieFresh API is running!' });
