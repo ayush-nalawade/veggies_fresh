@@ -27,14 +27,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       final token = await storage.read(key: 'access_token');
       final isAuthRoute = state.uri.path.startsWith('/auth');
       
+      print('Router redirect - Path: ${state.uri.path}, Token: ${token != null ? "exists" : "null"}, isAuthRoute: $isAuthRoute');
+      
       if (token == null && !isAuthRoute && state.uri.path != '/splash') {
+        print('Redirecting to login - no token');
         return '/auth/login';
       }
       
       if (token != null && isAuthRoute) {
+        print('Redirecting to home - token exists and on auth route');
         return '/home';
       }
       
+      print('No redirect needed');
       return null;
     },
     routes: [

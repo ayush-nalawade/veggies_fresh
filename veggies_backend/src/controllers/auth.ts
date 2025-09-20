@@ -23,13 +23,13 @@ const generateTokens = (userId: string) => {
   const accessToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET!,
-    { expiresIn: '15m' }
+    { expiresIn: '1h' } // Extended to 1 hour
   );
   
   const refreshToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET!,
-    { expiresIn: '7d' }
+    { expiresIn: '30d' } // Extended to 30 days
   );
   
   return { accessToken, refreshToken };
@@ -150,6 +150,66 @@ export const getGoogleAuthUrl = (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Failed to generate Google auth URL'
+    });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+    
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        error: 'Refresh token is required'
+      });
+    }
+
+    // Verify refresh token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET!) as any;
+    const userId = decoded.userId;
+
+    // Check if user still exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Generate new tokens
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
+
+    res.json({
+      success: true,
+      data: {
+        accessToken,
+        refreshToken: newRefreshToken
+      }
+    });
+  } catch (error) {
+    logger.error('Refresh token error:', error);
+    res.status(401).json({
+      success: false,
+      error: 'Invalid refresh token'
+    });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    // In a real app, you might want to blacklist the token
+    // For now, we'll just return success
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    logger.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Logout failed'
     });
   }
 };

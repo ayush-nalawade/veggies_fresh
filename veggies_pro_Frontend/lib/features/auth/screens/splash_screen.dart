@@ -41,10 +41,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     const storage = FlutterSecureStorage();
     final token = await storage.read(key: 'access_token');
     
+    print('Splash screen - Token exists: ${token != null}');
+    
     if (mounted) {
       if (token != null) {
+        print('Splash screen - Redirecting to home');
         context.go('/home');
       } else {
+        print('Splash screen - Redirecting to login');
         context.go('/auth/login');
       }
     }
@@ -60,24 +64,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.eco,
-                  size: 60,
-                  color: Colors.green,
+              GestureDetector(
+                onLongPress: () async {
+                  const storage = FlutterSecureStorage();
+                  await storage.deleteAll();
+                  print('All tokens cleared!');
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Tokens cleared! Restarting app...'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    // Restart the app by going to login
+                    context.go('/auth/login');
+                  }
+                },
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.eco,
+                    size: 60,
+                    color: Colors.green,
+                  ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -97,7 +118,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   color: Colors.white70,
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
+              const Text(
+                'Long press logo to clear tokens',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white60,
+                ),
+              ),
+              const SizedBox(height: 20),
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
