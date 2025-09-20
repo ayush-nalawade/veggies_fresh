@@ -31,6 +31,7 @@ const seedData = async () => {
         const products = await Product_1.Product.insertMany([
             {
                 name: 'Fresh Tomatoes',
+                slug: 'fresh-tomatoes',
                 categoryId: categories[1]._id,
                 images: ['https://images.unsplash.com/photo-1546470427-4b4b4b4b4b4b?w=400'],
                 description: 'Fresh, juicy tomatoes perfect for salads and cooking',
@@ -42,6 +43,7 @@ const seedData = async () => {
             },
             {
                 name: 'Organic Bananas',
+                slug: 'organic-bananas',
                 categoryId: categories[0]._id,
                 images: ['https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400'],
                 description: 'Sweet, organic bananas rich in potassium',
@@ -53,6 +55,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Carrots',
+                slug: 'fresh-carrots',
                 categoryId: categories[1]._id,
                 images: ['https://images.unsplash.com/photo-1598170845058-87b9d4c0358a?w=400'],
                 description: 'Crisp, fresh carrots perfect for snacking',
@@ -64,6 +67,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Milk',
+                slug: 'fresh-milk',
                 categoryId: categories[2]._id,
                 images: ['https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400'],
                 description: 'Fresh, pure milk from local farms',
@@ -74,6 +78,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Onions',
+                slug: 'fresh-onions',
                 categoryId: categories[1]._id,
                 images: ['https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=400'],
                 description: 'Fresh onions perfect for cooking',
@@ -85,6 +90,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Potatoes',
+                slug: 'fresh-potatoes',
                 categoryId: categories[1]._id,
                 images: ['https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400'],
                 description: 'Fresh potatoes perfect for various dishes',
@@ -96,6 +102,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Spinach',
+                slug: 'fresh-spinach',
                 categoryId: categories[1]._id,
                 images: ['https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400'],
                 description: 'Fresh, leafy spinach rich in iron',
@@ -107,6 +114,7 @@ const seedData = async () => {
             },
             {
                 name: 'Fresh Apples',
+                slug: 'fresh-apples',
                 categoryId: categories[0]._id,
                 images: ['https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400'],
                 description: 'Crisp, sweet apples perfect for snacking',
