@@ -26,7 +26,12 @@ export const getCart = async (req: AuthRequest, res: Response) => {
     if (!cart) {
       return res.json({
         success: true,
-        data: { items: [], subtotal: 0 }
+        data: { 
+          _id: null,
+          userId: req.user!._id,
+          items: [], 
+          subtotal: 0 
+        }
       });
     }
 

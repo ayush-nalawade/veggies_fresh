@@ -23,7 +23,12 @@ const getCart = async (req, res) => {
         if (!cart) {
             return res.json({
                 success: true,
-                data: { items: [], subtotal: 0 }
+                data: {
+                    _id: null,
+                    userId: req.user._id,
+                    items: [],
+                    subtotal: 0
+                }
             });
         }
         res.json({

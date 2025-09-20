@@ -21,13 +21,13 @@ class CartItem {
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
-      productId: json['productId'] ?? json['productId']['_id'],
-      name: json['name'],
-      image: json['image'],
-      unit: json['unit'],
-      qty: (json['qty'] + 0.0),
-      unitPrice: (json['unitPrice'] + 0.0),
-      price: (json['price'] + 0.0),
+      productId: json['productId']?.toString() ?? (json['productId'] is Map ? json['productId']['_id']?.toString() : '') ?? '',
+      name: json['name']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+      unit: json['unit']?.toString() ?? '',
+      qty: (json['qty'] ?? 0).toDouble(),
+      unitPrice: (json['unitPrice'] ?? 0).toDouble(),
+      price: (json['price'] ?? 0).toDouble(),
     );
   }
 
@@ -79,12 +79,12 @@ class Cart {
 
   factory Cart.fromJson(Map<String, dynamic> json) {
     return Cart(
-      id: json['_id'] ?? json['id'],
-      userId: json['userId'] ?? json['userId']['_id'],
-      items: (json['items'] as List<dynamic>)
-          .map((item) => CartItem.fromJson(item))
-          .toList(),
-      subtotal: (json['subtotal'] + 0.0),
+      id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? (json['userId'] is Map ? json['userId']['_id']?.toString() : '') ?? '',
+      items: (json['items'] as List<dynamic>?)
+          ?.map((item) => CartItem.fromJson(item as Map<String, dynamic>))
+          .toList() ?? [],
+      subtotal: (json['subtotal'] ?? 0).toDouble(),
     );
   }
 

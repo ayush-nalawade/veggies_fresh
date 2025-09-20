@@ -26,11 +26,27 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     try {
       final response = await DioClient().dio.get('/cart');
       if (response.statusCode == 200) {
-        setState(() {
-          _cart = Cart.fromJson(response.data['data']);
-        });
+        final responseData = response.data;
+        print('Cart API Response: $responseData'); // Debug log
+        
+        if (responseData['success'] == true && responseData['data'] != null) {
+          setState(() {
+            _cart = Cart.fromJson(responseData['data']);
+          });
+        } else {
+          // Handle empty cart response
+          setState(() {
+            _cart = Cart(
+              id: '',
+              userId: '',
+              items: [],
+              subtotal: 0.0,
+            );
+          });
+        }
       }
     } catch (e) {
+      print('Cart loading error: $e'); // Debug log
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
