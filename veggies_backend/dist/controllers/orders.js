@@ -9,11 +9,13 @@ const getOrders = async (req, res) => {
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
         const skip = (pageNum - 1) * limitNum;
+        logger_1.logger.info(`Fetching orders for user: ${req.user._id}`);
         const orders = await Order_1.Order.find({ userId: req.user._id })
             .sort({ createdAt: -1 })
             .limit(limitNum)
             .skip(skip);
         const total = await Order_1.Order.countDocuments({ userId: req.user._id });
+        logger_1.logger.info(`Found ${orders.length} orders for user ${req.user._id}`);
         res.json({
             success: true,
             data: orders,

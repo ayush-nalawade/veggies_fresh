@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyPayment = exports.createOrder = exports.saveAddress = void 0;
+exports.verifyPayment = exports.getTimeSlots = exports.createOrder = exports.saveAddress = void 0;
 const zod_1 = require("zod");
 const razorpay_1 = __importDefault(require("razorpay"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -13,11 +13,20 @@ const logger_1 = require("../utils/logger");
 // Validation schemas
 const addressSchema = zod_1.z.object({
     line1: zod_1.z.string().min(1, 'Address line 1 is required'),
-    line2: zod_1.z.string().optional(),
+    line2: zod_1.z.string().optional().nullable(),
     city: zod_1.z.string().min(1, 'City is required'),
     state: zod_1.z.string().min(1, 'State is required'),
     pincode: zod_1.z.string().min(6, 'Pincode must be at least 6 characters'),
-    phone: zod_1.z.string().min(10, 'Phone number must be at least 10 characters')
+    phone: zod_1.z.string().optional().default('0000000000')
+});
+const createOrderSchema = zod_1.z.object({
+    address: addressSchema,
+    paymentMethod: zod_1.z.enum(['razorpay', 'cod']),
+    timeSlot: zod_1.z.object({
+        date: zod_1.z.string().min(1, 'Delivery date is required'),
+        startTime: zod_1.z.string().min(1, 'Start time is required'),
+        endTime: zod_1.z.string().min(1, 'End time is required')
+    })
 });
 const verifyPaymentSchema = zod_1.z.object({
     razorpayOrderId: zod_1.z.string().min(1, 'Razorpay order ID is required'),
@@ -25,6 +34,9 @@ const verifyPaymentSchema = zod_1.z.object({
     signature: zod_1.z.string().min(1, 'Signature is required'),
     orderId: zod_1.z.string().min(1, 'Order ID is required')
 });
+// Delivery charges configuration
+const DELIVERY_FEE = 40;
+const FREE_DELIVERY_THRESHOLD = 200;
 // Initialize Razorpay (only if keys are provided)
 let razorpay = null;
 if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
@@ -54,6 +66,7 @@ const saveAddress = async (req, res) => {
 exports.saveAddress = saveAddress;
 const createOrder = async (req, res) => {
     try {
+        const { address, paymentMethod, timeSlot } = createOrderSchema.parse(req.body);
         const userId = req.user._id;
         // Get user's cart
         const cart = await Cart_1.Cart.findOne({ userId });
@@ -63,61 +76,135 @@ const createOrder = async (req, res) => {
                 error: 'Cart is empty'
             });
         }
-        // Calculate total amount (in paise for Razorpay)
-        const amount = Math.round(cart.subtotal * 100);
-        // Create Razorpay order (if Razorpay is configured)
-        let razorpayOrder;
-        if (razorpay) {
-            razorpayOrder = await razorpay.orders.create({
-                amount,
-                currency: 'INR',
-                receipt: `ord_${Date.now()}`,
-                notes: {
-                    userId: userId.toString()
-                }
-            });
-        }
-        else {
-            // Mock order for development
-            razorpayOrder = {
-                id: `order_${Date.now()}`,
-                amount,
-                currency: 'INR'
-            };
-        }
+        // Calculate delivery fee
+        const deliveryFee = cart.subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
+        const total = cart.subtotal + deliveryFee;
         // Create order in database
         const order = await Order_1.Order.create({
             userId,
             items: cart.items,
-            address: req.body.address || {}, // Address should be provided
+            address,
+            timeSlot,
             subtotal: cart.subtotal,
-            deliveryFee: 0, // Free delivery for now
-            total: cart.subtotal,
+            deliveryFee,
+            total,
             payment: {
-                provider: 'razorpay',
-                status: 'created',
-                orderId: razorpayOrder.id
+                provider: paymentMethod,
+                status: paymentMethod === 'cod' ? 'pending' : 'created',
+                orderId: paymentMethod === 'cod' ? `cod_${Date.now()}` : null
             },
-            status: 'placed'
+            status: paymentMethod === 'cod' ? 'confirmed' : 'placed'
         });
-        res.json({
-            success: true,
-            data: {
-                razorpayOrderId: razorpayOrder.id,
-                amount,
-                orderId: order._id
+        // If COD, clear cart immediately
+        if (paymentMethod === 'cod') {
+            await Cart_1.Cart.findOneAndUpdate({ userId }, { items: [], subtotal: 0 });
+        }
+        // For Razorpay, create payment order
+        if (paymentMethod === 'razorpay') {
+            const amount = Math.round(total * 100); // Convert to paise
+            let razorpayOrder;
+            if (razorpay) {
+                razorpayOrder = await razorpay.orders.create({
+                    amount,
+                    currency: 'INR',
+                    receipt: `ord_${Date.now()}`,
+                    notes: {
+                        userId: userId.toString(),
+                        orderId: order._id.toString()
+                    }
+                });
             }
-        });
+            else {
+                // Mock order for development
+                razorpayOrder = {
+                    id: `order_${Date.now()}`,
+                    amount,
+                    currency: 'INR'
+                };
+            }
+            // Update order with Razorpay order ID
+            await Order_1.Order.findByIdAndUpdate(order._id, {
+                'payment.orderId': razorpayOrder.id
+            });
+            res.json({
+                success: true,
+                data: {
+                    orderId: order._id,
+                    razorpayOrderId: razorpayOrder.id,
+                    amount,
+                    paymentMethod,
+                    deliveryFee,
+                    total
+                }
+            });
+        }
+        else {
+            // COD order
+            res.json({
+                success: true,
+                data: {
+                    orderId: order._id,
+                    paymentMethod,
+                    deliveryFee,
+                    total,
+                    message: 'Order placed successfully! You will pay on delivery.'
+                }
+            });
+        }
     }
     catch (error) {
         logger_1.logger.error('Create order error:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to create order'
+            error: error instanceof zod_1.z.ZodError ? 'Validation error' : 'Failed to create order'
         });
     }
 };
 exports.createOrder = createOrder;
+const getTimeSlots = async (req, res) => {
+    try {
+        const today = new Date();
+        const timeSlots = [];
+        // Generate time slots for next 2 days only
+        for (let i = 0; i < 2; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const daySlots = [];
+            // Generate 2-hour slots from 8 AM to 8 PM
+            for (let hour = 8; hour < 20; hour += 2) {
+                const startTime = `${hour.toString().padStart(2, '0')}:00`;
+                const endTime = `${(hour + 2).toString().padStart(2, '0')}:00`;
+                daySlots.push({
+                    startTime,
+                    endTime,
+                    display: `${startTime} - ${endTime}`
+                });
+            }
+            timeSlots.push({
+                date: date.toISOString().split('T')[0],
+                display: date.toLocaleDateString('en-IN', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                slots: daySlots
+            });
+        }
+        res.json({
+            success: true,
+            data: { timeSlots }
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Get time slots error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get time slots'
+        });
+    }
+};
+exports.getTimeSlots = getTimeSlots;
 const verifyPayment = async (req, res) => {
     try {
         const { razorpayOrderId, paymentId, signature, orderId } = verifyPaymentSchema.parse(req.body);

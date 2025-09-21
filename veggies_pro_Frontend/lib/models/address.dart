@@ -8,6 +8,7 @@ class Address {
   final String state;
   final String pincode;
   final String country;
+  final String phone;
   final bool isDefault;
 
   Address({
@@ -20,21 +21,23 @@ class Address {
     required this.state,
     required this.pincode,
     required this.country,
+    required this.phone,
     this.isDefault = false,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       id: json['_id']?.toString(),
-      type: json['type'] ?? 'home',
-      name: json['name'] ?? '',
-      line1: json['line1'] ?? '',
+      type: json['type']?.toString() ?? 'home',
+      name: json['name']?.toString() ?? '',
+      line1: json['line1']?.toString() ?? '',
       line2: json['line2']?.toString(),
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      pincode: json['pincode'] ?? '',
-      country: json['country'] ?? 'India',
-      isDefault: json['isDefault'] ?? false,
+      city: json['city']?.toString() ?? '',
+      state: json['state']?.toString() ?? '',
+      pincode: json['pincode']?.toString() ?? '',
+      country: json['country']?.toString() ?? 'India',
+      phone: json['phone']?.toString() ?? '',
+      isDefault: json['isDefault'] == true,
     );
   }
 
@@ -49,6 +52,7 @@ class Address {
       'state': state,
       'pincode': pincode,
       'country': country,
+      'phone': phone,
       'isDefault': isDefault,
     };
   }
@@ -63,6 +67,7 @@ class Address {
     String? state,
     String? pincode,
     String? country,
+    String? phone,
     bool? isDefault,
   }) {
     return Address(
@@ -75,6 +80,7 @@ class Address {
       state: state ?? this.state,
       pincode: pincode ?? this.pincode,
       country: country ?? this.country,
+      phone: phone ?? this.phone,
       isDefault: isDefault ?? this.isDefault,
     );
   }

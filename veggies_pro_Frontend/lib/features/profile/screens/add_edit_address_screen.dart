@@ -22,6 +22,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   final _stateController = TextEditingController();
   final _pincodeController = TextEditingController();
   final _countryController = TextEditingController();
+  final _phoneController = TextEditingController();
   
   String _selectedType = 'home';
   bool _isDefault = false;
@@ -38,6 +39,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
       _stateController.text = widget.address!.state;
       _pincodeController.text = widget.address!.pincode;
       _countryController.text = widget.address!.country;
+      _phoneController.text = widget.address!.phone;
       _selectedType = widget.address!.type;
       _isDefault = widget.address!.isDefault;
     }
@@ -52,6 +54,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     _stateController.dispose();
     _pincodeController.dispose();
     _countryController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -71,6 +74,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
         state: _stateController.text.trim(),
         pincode: _pincodeController.text.trim(),
         country: _countryController.text.trim(),
+        phone: _phoneController.text.trim(),
         isDefault: _isDefault,
       );
 
@@ -273,6 +277,27 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
                 }
                 if (value.trim().length < 2) {
                   return 'Country must be at least 2 characters';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Phone
+            TextFormField(
+              controller: _phoneController,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number *',
+                prefixIcon: Icon(Icons.phone),
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.phone,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Phone number is required';
+                }
+                if (value.trim().length < 10) {
+                  return 'Phone number must be at least 10 digits';
                 }
                 return null;
               },

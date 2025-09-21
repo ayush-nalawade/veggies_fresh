@@ -8,6 +8,48 @@ import '../../../models/cart.dart';
 import '../../../models/address.dart';
 import '../../../services/profile_service.dart';
 
+class TimeSlot {
+  final String date;
+  final String display;
+  final List<SlotOption> slots;
+
+  TimeSlot({
+    required this.date,
+    required this.display,
+    required this.slots,
+  });
+
+  factory TimeSlot.fromJson(Map<String, dynamic> json) {
+    return TimeSlot(
+      date: json['date'],
+      display: json['display'],
+      slots: (json['slots'] as List)
+          .map((slot) => SlotOption.fromJson(slot))
+          .toList(),
+    );
+  }
+}
+
+class SlotOption {
+  final String startTime;
+  final String endTime;
+  final String display;
+
+  SlotOption({
+    required this.startTime,
+    required this.endTime,
+    required this.display,
+  });
+
+  factory SlotOption.fromJson(Map<String, dynamic> json) {
+    return SlotOption(
+      startTime: json['startTime'],
+      endTime: json['endTime'],
+      display: json['display'],
+    );
+  }
+}
+
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
@@ -19,6 +61,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Cart? _cart;
   List<Address> _addresses = [];
   Address? _selectedAddress;
+  List<TimeSlot> _timeSlots = [];
+  TimeSlot? _selectedTimeSlot;
+  SlotOption? _selectedSlot;
+  String _paymentMethod = 'razorpay';
+  double _deliveryFee = 0;
   bool _isLoading = true;
   bool _isProcessingPayment = false;
   late Razorpay _razorpay;
@@ -42,11 +89,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      // Load cart and addresses in parallel
-      final results = await Future.wait([
+      await Future.wait([
         _loadCart(),
         _loadAddresses(),
+        _loadTimeSlots(),
       ]);
+      _calculateDeliveryFee();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -92,6 +140,29 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
   }
 
+  Future<void> _loadTimeSlots() async {
+    try {
+      final response = await DioClient().dio.get('/checkout/time-slots');
+      if (response.statusCode == 200) {
+        setState(() {
+          _timeSlots = (response.data['data']['timeSlots'] as List)
+              .map((slot) => TimeSlot.fromJson(slot))
+              .toList();
+        });
+      }
+    } catch (e) {
+      throw Exception('Failed to load time slots: $e');
+    }
+  }
+
+  void _calculateDeliveryFee() {
+    if (_cart != null) {
+      setState(() {
+        _deliveryFee = _cart!.subtotal < 200 ? 40 : 0;
+      });
+    }
+  }
+
   Future<void> _proceedToPayment() async {
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,24 +174,56 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       return;
     }
 
+    if (_selectedTimeSlot == null || _selectedSlot == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a delivery time slot'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isProcessingPayment = true);
 
     try {
-      // Create order with selected address
+      // Create order with selected address and time slot
       final orderResponse = await DioClient().dio.post('/checkout/create-order', data: {
         'address': {
           'line1': _selectedAddress!.line1,
-          'line2': _selectedAddress!.line2,
+          'line2': _selectedAddress!.line2?.isNotEmpty == true ? _selectedAddress!.line2 : null,
           'city': _selectedAddress!.city,
           'state': _selectedAddress!.state,
           'pincode': _selectedAddress!.pincode,
           'country': _selectedAddress!.country,
+          'phone': _selectedAddress!.phone.isNotEmpty ? _selectedAddress!.phone : '0000000000',
+        },
+        'paymentMethod': _paymentMethod,
+        'timeSlot': {
+          'date': _selectedTimeSlot!.date,
+          'startTime': _selectedSlot!.startTime,
+          'endTime': _selectedSlot!.endTime,
         }
       });
 
       if (orderResponse.statusCode == 200) {
         final orderData = orderResponse.data['data'];
-        _openRazorpayCheckout(orderData);
+        
+        if (_paymentMethod == 'cod') {
+          // COD order - show success message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Order placed successfully! You will pay on delivery.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            context.go('/orders');
+          }
+        } else {
+          // Razorpay payment
+          _openRazorpayCheckout(orderData);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -144,8 +247,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       'name': 'VeggieFresh',
       'order_id': orderData['razorpayOrderId'],
       'prefill': {
-        'email': 'user@example.com', // You can get this from user data
-        'contact': '', // Phone will be filled from selected address if needed
+        'email': 'user@example.com',
+        'contact': _selectedAddress?.phone.isNotEmpty == true ? _selectedAddress!.phone : '0000000000',
       },
       'theme': {
         'color': '#2E7D32'
@@ -161,7 +264,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         'razorpayOrderId': response.orderId,
         'paymentId': response.paymentId,
         'signature': response.signature,
-        'orderId': response.orderId, // You might need to store this from create-order
+        'orderId': response.orderId,
       });
 
       if (verifyResponse.statusCode == 200) {
@@ -211,33 +314,48 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Checkout'),
-        actions: [
-          IconButton(
-            onPressed: _loadData,
-            icon: const Icon(Icons.refresh),
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigate back to cart when back button is pressed
+        context.go('/cart');
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Checkout'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/cart'),
           ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _cart == null || _cart!.items.isEmpty
-              ? _buildEmptyCart()
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildAddressSection(),
-                      const SizedBox(height: 24),
-                      _buildOrderSummary(),
-                      const SizedBox(height: 24),
-                      _buildPaymentButton(),
-                    ],
+          actions: [
+            IconButton(
+              onPressed: _loadData,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _cart == null || _cart!.items.isEmpty
+                ? _buildEmptyCart()
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAddressSection(),
+                        const SizedBox(height: 24),
+                        _buildTimeSlotSection(),
+                        const SizedBox(height: 24),
+                        _buildPaymentMethodSection(),
+                        const SizedBox(height: 24),
+                        _buildOrderSummary(),
+                        const SizedBox(height: 24),
+                        _buildPaymentButton(),
+                      ],
+                    ),
                   ),
-                ),
+      ),
     );
   }
 
@@ -459,6 +577,126 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
+  Widget _buildTimeSlotSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Delivery Time',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (_timeSlots.isEmpty)
+          const Center(child: CircularProgressIndicator())
+        else
+          _buildTimeSlotList(),
+      ],
+    );
+  }
+
+  Widget _buildTimeSlotList() {
+    return Column(
+      children: _timeSlots.map((timeSlot) => _buildTimeSlotCard(timeSlot)).toList(),
+    );
+  }
+
+  Widget _buildTimeSlotCard(TimeSlot timeSlot) {
+    final isSelected = _selectedTimeSlot?.date == timeSlot.date;
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ExpansionTile(
+        title: Text(
+          timeSlot.display,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).colorScheme.primary : null,
+          ),
+        ),
+        leading: Radio<String>(
+          value: timeSlot.date,
+          groupValue: _selectedTimeSlot?.date,
+          onChanged: (value) {
+            setState(() {
+              _selectedTimeSlot = timeSlot;
+              _selectedSlot = null; // Reset slot selection
+            });
+          },
+        ),
+        children: timeSlot.slots.map((slot) => _buildSlotOption(slot)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildSlotOption(SlotOption slot) {
+    final isSelected = _selectedSlot?.startTime == slot.startTime && 
+                      _selectedSlot?.endTime == slot.endTime;
+    
+    return ListTile(
+      title: Text(slot.display),
+      leading: Radio<SlotOption>(
+        value: slot,
+        groupValue: _selectedSlot,
+        onChanged: (value) {
+          setState(() {
+            _selectedSlot = value;
+          });
+        },
+      ),
+      onTap: () {
+        setState(() {
+          _selectedSlot = slot;
+        });
+      },
+    );
+  }
+
+  Widget _buildPaymentMethodSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Payment Method',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: Column(
+            children: [
+              RadioListTile<String>(
+                title: const Text('Card/UPI Payment'),
+                subtitle: const Text('Pay securely with Razorpay'),
+                value: 'razorpay',
+                groupValue: _paymentMethod,
+                onChanged: (value) {
+                  setState(() {
+                    _paymentMethod = value!;
+                  });
+                },
+              ),
+              const Divider(height: 1),
+              RadioListTile<String>(
+                title: const Text('Cash on Delivery'),
+                subtitle: const Text('Pay when your order arrives'),
+                value: 'cod',
+                groupValue: _paymentMethod,
+                onChanged: (value) {
+                  setState(() {
+                    _paymentMethod = value!;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   IconData _getAddressIcon(String type) {
     switch (type) {
       case 'home':
@@ -471,6 +709,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _buildOrderSummary() {
+    final total = _cart!.subtotal + _deliveryFee;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -525,19 +765,30 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Delivery Fee',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    const Text(
-                      '₹0',
+                    Text(
+                      _deliveryFee == 0 ? 'FREE' : '₹${_deliveryFee.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: _deliveryFee == 0 ? Colors.green : null,
                       ),
                     ),
                   ],
                 ),
+                if (_deliveryFee > 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Free delivery on orders above ₹200',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
                 const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -549,7 +800,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       ),
                     ),
                     Text(
-                      '₹${_cart!.subtotal.toStringAsFixed(2)}',
+                      '₹${total.toStringAsFixed(2)}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -572,7 +823,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         onPressed: _isProcessingPayment ? null : _proceedToPayment,
         child: _isProcessingPayment
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('Proceed to Payment'),
+            : Text(_paymentMethod == 'cod' ? 'Place Order (COD)' : 'Proceed to Payment'),
       ),
     );
   }

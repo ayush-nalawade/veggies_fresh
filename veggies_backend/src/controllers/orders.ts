@@ -11,12 +11,16 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
+    logger.info(`Fetching orders for user: ${req.user!._id}`);
+
     const orders = await Order.find({ userId: req.user!._id })
       .sort({ createdAt: -1 })
       .limit(limitNum)
       .skip(skip);
 
     const total = await Order.countDocuments({ userId: req.user!._id });
+
+    logger.info(`Found ${orders.length} orders for user ${req.user!._id}`);
 
     res.json({
       success: true,

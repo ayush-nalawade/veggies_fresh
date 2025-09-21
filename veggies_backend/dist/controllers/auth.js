@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.googleCallback = exports.getGoogleAuthUrl = exports.login = exports.register = void 0;
+exports.googleCallback = exports.logout = exports.refreshToken = exports.getGoogleAuthUrl = exports.login = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const zod_1 = require("zod");
@@ -21,8 +21,10 @@ const loginSchema = zod_1.z.object({
 });
 // Generate JWT tokens
 const generateTokens = (userId) => {
-    const accessToken = jsonwebtoken_1.default.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jsonwebtoken_1.default.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const accessToken = jsonwebtoken_1.default.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' } // Extended to 1 hour
+    );
+    const refreshToken = jsonwebtoken_1.default.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '30d' } // Extended to 30 days
+    );
     return { accessToken, refreshToken };
 };
 const register = async (req, res) => {
@@ -137,6 +139,63 @@ const getGoogleAuthUrl = (req, res) => {
     }
 };
 exports.getGoogleAuthUrl = getGoogleAuthUrl;
+const refreshToken = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                error: 'Refresh token is required'
+            });
+        }
+        // Verify refresh token
+        const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.JWT_SECRET);
+        const userId = decoded.userId;
+        // Check if user still exists
+        const user = await User_1.User.findById(userId);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+        // Generate new tokens
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
+        res.json({
+            success: true,
+            data: {
+                accessToken,
+                refreshToken: newRefreshToken
+            }
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Refresh token error:', error);
+        res.status(401).json({
+            success: false,
+            error: 'Invalid refresh token'
+        });
+    }
+};
+exports.refreshToken = refreshToken;
+const logout = async (req, res) => {
+    try {
+        // In a real app, you might want to blacklist the token
+        // For now, we'll just return success
+        res.json({
+            success: true,
+            message: 'Logged out successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Logout error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Logout failed'
+        });
+    }
+};
+exports.logout = logout;
 const googleCallback = async (req, res) => {
     try {
         const { code } = req.query;

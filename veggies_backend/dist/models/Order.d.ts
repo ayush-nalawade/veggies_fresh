@@ -1,9 +1,14 @@
 import mongoose, { Document } from 'mongoose';
 import { IAddress } from './User';
 import { ICartItem } from './Cart';
+export interface ITimeSlot {
+    date: string;
+    startTime: string;
+    endTime: string;
+}
 export interface IPayment {
-    provider: 'razorpay' | 'stripe';
-    status: 'created' | 'paid' | 'failed';
+    provider: 'razorpay' | 'stripe' | 'cod';
+    status: 'created' | 'paid' | 'failed' | 'pending';
     orderId?: string;
     paymentId?: string;
     signature?: string;
@@ -13,6 +18,7 @@ export interface IOrder extends Document {
     userId: mongoose.Types.ObjectId;
     items: ICartItem[];
     address: IAddress;
+    timeSlot: ITimeSlot;
     subtotal: number;
     deliveryFee: number;
     total: number;

@@ -35,9 +35,14 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const timeSlotSchema = new mongoose_1.Schema({
+    date: { type: String, required: true },
+    startTime: { type: String, required: true },
+    endTime: { type: String, required: true }
+});
 const paymentSchema = new mongoose_1.Schema({
-    provider: { type: String, enum: ['razorpay', 'stripe'], required: true },
-    status: { type: String, enum: ['created', 'paid', 'failed'], required: true },
+    provider: { type: String, enum: ['razorpay', 'stripe', 'cod'], required: true },
+    status: { type: String, enum: ['created', 'paid', 'failed', 'pending'], required: true },
     orderId: { type: String },
     paymentId: { type: String },
     signature: { type: String }
@@ -46,6 +51,7 @@ const orderSchema = new mongoose_1.Schema({
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     items: [{ type: mongoose_1.Schema.Types.Mixed }], // Using ICartItem structure
     address: { type: mongoose_1.Schema.Types.Mixed, required: true }, // Using IAddress structure
+    timeSlot: { type: timeSlotSchema, required: true },
     subtotal: { type: Number, required: true },
     deliveryFee: { type: Number, default: 0 },
     total: { type: Number, required: true },

@@ -8,6 +8,8 @@ const auth_1 = require("../controllers/auth");
 const router = express_1.default.Router();
 router.post('/register', auth_1.register);
 router.post('/login', auth_1.login);
+router.post('/refresh', auth_1.refreshToken);
+router.post('/logout', auth_1.logout);
 router.get('/google/url', auth_1.getGoogleAuthUrl);
 router.get('/google/callback', auth_1.googleCallback);
 exports.default = router;
