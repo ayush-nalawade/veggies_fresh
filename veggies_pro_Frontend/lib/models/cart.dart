@@ -20,8 +20,16 @@ class CartItem {
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    // Handle productId - it could be a string or a populated object
+    String productId = '';
+    if (json['productId'] is String) {
+      productId = json['productId'] as String;
+    } else if (json['productId'] is Map) {
+      productId = json['productId']['_id']?.toString() ?? '';
+    }
+    
     return CartItem(
-      productId: json['productId']?.toString() ?? (json['productId'] is Map ? json['productId']['_id']?.toString() : '') ?? '',
+      productId: productId,
       name: json['name']?.toString() ?? '',
       image: json['image']?.toString() ?? '',
       unit: json['unit']?.toString() ?? '',

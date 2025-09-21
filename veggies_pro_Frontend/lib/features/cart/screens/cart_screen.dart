@@ -30,9 +30,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         print('Cart API Response: $responseData'); // Debug log
         
         if (responseData['success'] == true && responseData['data'] != null) {
+          final cartData = responseData['data'];
+          print('Cart items: ${cartData['items']}'); // Debug log for items
+          
           setState(() {
-            _cart = Cart.fromJson(responseData['data']);
+            _cart = Cart.fromJson(cartData);
           });
+          
+          // Debug log each item's productId
+          for (var item in _cart!.items) {
+            print('Cart item productId: ${item.productId} (type: ${item.productId.runtimeType})');
+          }
         } else {
           // Handle empty cart response
           setState(() {
@@ -62,14 +70,35 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   Future<void> _updateQuantity(String productId, double newQuantity) async {
     try {
+      print('Updating quantity for productId: $productId, newQuantity: $newQuantity'); // Debug log
+      
+      // Round to 2 decimal places and ensure minimum quantity
+      newQuantity = double.parse(newQuantity.toStringAsFixed(2));
+      
+      // If quantity is 0 or negative, remove the item
+      if (newQuantity <= 0) {
+        _removeItem(productId);
+        return;
+      }
+      
       final response = await DioClient().dio.patch('/cart/items/$productId', data: {
         'qty': newQuantity,
       });
 
+      print('Update response: ${response.statusCode} - ${response.data}'); // Debug log
       if (response.statusCode == 200) {
         _loadCart(); // Reload cart
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Quantity updated successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
+      print('Update quantity error: $e'); // Debug log
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -83,8 +112,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   Future<void> _removeItem(String productId) async {
     try {
+      print('Removing item with productId: $productId'); // Debug log
+      
       final response = await DioClient().dio.delete('/cart/items/$productId');
 
+      print('Remove response: ${response.statusCode} - ${response.data}'); // Debug log
       if (response.statusCode == 200) {
         _loadCart(); // Reload cart
         if (mounted) {
@@ -97,6 +129,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         }
       }
     } catch (e) {
+      print('Remove item error: $e'); // Debug log
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
