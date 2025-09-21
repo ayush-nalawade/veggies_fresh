@@ -13,6 +13,7 @@ const logger_1 = require("../utils/logger");
 const registerSchema = zod_1.z.object({
     name: zod_1.z.string().min(2, 'Name must be at least 2 characters'),
     email: zod_1.z.string().email('Invalid email format'),
+    phone: zod_1.z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
     password: zod_1.z.string().min(6, 'Password must be at least 6 characters')
 });
 const loginSchema = zod_1.z.object({
@@ -29,7 +30,7 @@ const generateTokens = (userId) => {
 };
 const register = async (req, res) => {
     try {
-        const { name, email, password } = registerSchema.parse(req.body);
+        const { name, email, phone, password } = registerSchema.parse(req.body);
         // Check if user already exists
         const existingUser = await User_1.User.findOne({ email });
         if (existingUser) {
@@ -45,6 +46,7 @@ const register = async (req, res) => {
         const user = await User_1.User.create({
             name,
             email,
+            phone,
             passwordHash,
             addresses: []
         });
@@ -56,6 +58,7 @@ const register = async (req, res) => {
                     id: user._id,
                     name: user.name,
                     email: user.email,
+                    phone: user.phone,
                     avatarUrl: user.avatarUrl,
                     role: user.role
                 },

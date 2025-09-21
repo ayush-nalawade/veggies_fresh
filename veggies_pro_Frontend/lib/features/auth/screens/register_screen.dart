@@ -14,6 +14,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
@@ -24,6 +25,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -38,6 +40,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       final response = await DioClient().dio.post('/auth/register', data: {
         'name': _nameController.text.trim(),
         'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
         'password': _passwordController.text,
       });
 
@@ -139,6 +142,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     }
                     if (!value.contains('@')) {
                       return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                
+                // Phone field
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    prefixIcon: Icon(Icons.phone),
+                    hintText: 'Enter 10-digit phone number',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your phone number';
+                    }
+                    if (value.length != 10) {
+                      return 'Phone number must be exactly 10 digits';
+                    }
+                    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                      return 'Phone number must contain only digits';
                     }
                     return null;
                   },
