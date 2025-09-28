@@ -57,6 +57,10 @@ dependencies:
   
   # Utils
   shared_preferences: ^2.2.2
+  
+  # OTP and UI
+  pin_code_fields: ^8.0.1
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:

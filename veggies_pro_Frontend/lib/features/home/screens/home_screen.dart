@@ -15,7 +15,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Category> _categories = [];
-  List<Product> _featuredProducts = [];
   bool _isLoading = true;
 
   @override
@@ -32,16 +31,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         setState(() {
           _categories = (categoriesResponse.data['data'] as List)
               .map((json) => Category.fromJson(json))
-              .toList();
-        });
-      }
-
-      // Load featured products
-      final productsResponse = await DioClient().dio.get('/products?limit=6');
-      if (productsResponse.statusCode == 200) {
-        setState(() {
-          _featuredProducts = (productsResponse.data['data'] as List)
-              .map((json) => Product.fromJson(json))
               .toList();
         });
       }
@@ -137,20 +126,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 24),
 
                     // Categories section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Categories',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/categories'),
-                          child: const Text('View All'),
-                        ),
-                      ],
+                    Text(
+                      'Categories',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -198,116 +178,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Featured products section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Featured Products',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/categories'),
-                          child: const Text('View All'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: _featuredProducts.length,
-                      itemBuilder: (context, index) {
-                        final product = _featuredProducts[index];
-                        return _buildProductCard(product);
-                      },
-                    ),
                   ],
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildProductCard(Product product) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: () => context.go('/product/${product.id}'),
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  color: Colors.grey[100],
-                ),
-                child: product.firstImage.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: product.firstImage,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.image),
-                      )
-                    : const Icon(Icons.image),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'From ₹${product.minPrice.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => context.go('/product/${product.id}'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                        ),
-                        child: const Text('View', style: TextStyle(fontSize: 12)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

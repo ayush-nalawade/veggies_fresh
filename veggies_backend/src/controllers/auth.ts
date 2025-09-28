@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { z } from 'zod';
 import { User } from '../models/User';
+import { OTP } from '../models/OTP';
 import { logger } from '../utils/logger';
+import { sendOTP, generateOTP } from '../utils/twilio';
 
 // Validation schemas
 const registerSchema = z.object({
@@ -17,6 +19,21 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(1, 'Password is required')
+});
+
+const sendOTPSchema = z.object({
+  phone: z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
+});
+
+const verifyOTPSchema = z.object({
+  phone: z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+  otp: z.string().regex(/^[0-9]{4}$/, 'OTP must be exactly 4 digits')
+});
+
+const completeProfileSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email format').optional(),
+  city: z.string().min(1, 'City is required')
 });
 
 // Generate JWT tokens
@@ -302,6 +319,187 @@ export const googleCallback = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Google authentication failed'
+    });
+  }
+};
+
+// Send OTP to phone number
+export const sendOTPToPhone = async (req: Request, res: Response) => {
+  try {
+    const { phone } = sendOTPSchema.parse(req.body);
+    
+    // Generate 4-digit OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    
+    // Invalidate any existing OTPs for this phone
+    await OTP.updateMany(
+      { phone, isUsed: false },
+      { isUsed: true }
+    );
+    
+    // Create new OTP record
+    await OTP.create({
+      phone,
+      otp,
+      expiresAt
+    });
+    
+    // Send OTP via Twilio
+    const sent = await sendOTP(phone, otp);
+    
+    if (!sent) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to send OTP. Please try again.'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'OTP sent successfully'
+    });
+  } catch (error) {
+    logger.error('Send OTP error:', error);
+    res.status(400).json({
+      success: false,
+      error: error instanceof z.ZodError ? 'Invalid phone number format' : 'Failed to send OTP'
+    });
+  }
+};
+
+// Verify OTP and check if user exists
+export const verifyOTP = async (req: Request, res: Response) => {
+  try {
+    const { phone, otp } = verifyOTPSchema.parse(req.body);
+    
+    // Find valid OTP
+    const otpRecord = await OTP.findOne({
+      phone,
+      otp,
+      isUsed: false,
+      expiresAt: { $gt: new Date() }
+    });
+    
+    if (!otpRecord) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid or expired OTP'
+      });
+    }
+    
+    // Mark OTP as used
+    otpRecord.isUsed = true;
+    await otpRecord.save();
+    
+    // Check if user exists
+    const existingUser = await User.findOne({ phone });
+    
+    if (existingUser) {
+      // User exists, update phone verification status
+      existingUser.isPhoneVerified = true;
+      await existingUser.save();
+      
+      const { accessToken, refreshToken } = generateTokens(existingUser._id.toString());
+      
+      return res.json({
+        success: true,
+        data: {
+          user: {
+            id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            phone: existingUser.phone,
+            avatarUrl: existingUser.avatarUrl,
+            role: existingUser.role,
+            isPhoneVerified: existingUser.isPhoneVerified
+          },
+          accessToken,
+          refreshToken,
+          isNewUser: false
+        }
+      });
+    } else {
+      // New user, return temporary token for profile completion
+      const tempToken = jwt.sign(
+        { phone, temp: true },
+        process.env.JWT_SECRET!,
+        { expiresIn: '10m' }
+      );
+      
+      return res.json({
+        success: true,
+        data: {
+          tempToken,
+          isNewUser: true
+        }
+      });
+    }
+  } catch (error) {
+    logger.error('Verify OTP error:', error);
+    res.status(400).json({
+      success: false,
+      error: error instanceof z.ZodError ? 'Invalid OTP format' : 'OTP verification failed'
+    });
+  }
+};
+
+// Complete user profile for new users
+export const completeProfile = async (req: Request, res: Response) => {
+  try {
+    const { name, email, city } = completeProfileSchema.parse(req.body);
+    
+    // Verify temp token
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authorization token required'
+      });
+    }
+    
+    const tempToken = authHeader.substring(7);
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET!) as any;
+    
+    if (!decoded.temp || !decoded.phone) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid temporary token'
+      });
+    }
+    
+    // Create new user
+    const user = await User.create({
+      name,
+      email,
+      phone: decoded.phone,
+      isPhoneVerified: true,
+      addresses: []
+    });
+    
+    const { accessToken, refreshToken } = generateTokens(user._id.toString());
+    
+    res.status(201).json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          avatarUrl: user.avatarUrl,
+          role: user.role,
+          isPhoneVerified: user.isPhoneVerified
+        },
+        accessToken,
+        refreshToken
+      }
+    });
+  } catch (error) {
+    logger.error('Complete profile error:', error);
+    res.status(400).json({
+      success: false,
+      error: error instanceof z.ZodError ? 'Validation error' : 'Profile completion failed'
     });
   }
 };

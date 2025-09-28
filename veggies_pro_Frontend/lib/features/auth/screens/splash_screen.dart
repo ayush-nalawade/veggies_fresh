@@ -48,8 +48,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         print('Splash screen - Redirecting to home');
         context.go('/home');
       } else {
-        print('Splash screen - Redirecting to login');
-        context.go('/auth/login');
+        print('Splash screen - Redirecting to phone login');
+        context.go('/auth/phone-login');
       }
     }
   }
@@ -76,8 +76,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         backgroundColor: Colors.green,
                       ),
                     );
-                    // Restart the app by going to login
-                    context.go('/auth/login');
+                    // Restart the app by going to phone login
+                    context.go('/auth/phone-login');
                   }
                 },
                 child: Container(

@@ -45,7 +45,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     const storage = FlutterSecureStorage();
     await storage.deleteAll();
     if (mounted) {
-      context.go('/auth/login');
+      context.go('/auth/phone-login');
     }
   }
 

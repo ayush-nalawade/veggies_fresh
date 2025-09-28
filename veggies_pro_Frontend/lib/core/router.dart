@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../features/auth/screens/splash_screen.dart';
-import '../features/auth/screens/login_screen.dart';
-import '../features/auth/screens/register_screen.dart';
+import '../features/auth/screens/phone_login_screen.dart';
+import '../features/auth/screens/otp_verification_screen.dart';
+import '../features/auth/screens/user_details_screen.dart';
 import '../features/home/screens/home_screen.dart';
-import '../features/catalog/screens/category_screen.dart';
 import '../features/catalog/screens/product_list_screen.dart';
 import '../features/catalog/screens/product_detail_screen.dart';
 import '../features/cart/screens/cart_screen.dart';
@@ -30,8 +30,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       print('Router redirect - Path: ${state.uri.path}, Token: ${token != null ? "exists" : "null"}, isAuthRoute: $isAuthRoute');
       
       if (token == null && !isAuthRoute && state.uri.path != '/splash') {
-        print('Redirecting to login - no token');
-        return '/auth/login';
+        print('Redirecting to phone login - no token');
+        return '/auth/phone-login';
       }
       
       if (token != null && isAuthRoute) {
@@ -48,12 +48,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/auth/login',
-        builder: (context, state) => const LoginScreen(),
+        path: '/auth/phone-login',
+        builder: (context, state) => const PhoneLoginScreen(),
       ),
       GoRoute(
-        path: '/auth/register',
-        builder: (context, state) => const RegisterScreen(),
+        path: '/auth/otp-verification',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return OTPVerificationScreen(
+            phone: extra['phone'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/auth/user-details',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return UserDetailsScreen(
+            tempToken: extra['tempToken'] as String,
+          );
+        },
       ),
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
@@ -61,10 +75,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/home',
             builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/categories',
-            builder: (context, state) => const CategoryScreen(),
           ),
           GoRoute(
             path: '/products/:categoryId',
@@ -139,10 +149,6 @@ class MainShell extends StatelessWidget {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
             label: 'Cart',
           ),
@@ -162,10 +168,9 @@ class MainShell extends StatelessWidget {
   int _getCurrentIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/categories')) return 1;
-    if (location.startsWith('/cart')) return 2;
-    if (location.startsWith('/orders')) return 3;
-    if (location.startsWith('/profile')) return 4;
+    if (location.startsWith('/cart')) return 1;
+    if (location.startsWith('/orders')) return 2;
+    if (location.startsWith('/profile')) return 3;
     return 0;
   }
 
@@ -175,15 +180,12 @@ class MainShell extends StatelessWidget {
         context.go('/home');
         break;
       case 1:
-        context.go('/categories');
-        break;
-      case 2:
         context.go('/cart');
         break;
-      case 3:
+      case 2:
         context.go('/orders');
         break;
-      case 4:
+      case 3:
         context.go('/profile');
         break;
     }

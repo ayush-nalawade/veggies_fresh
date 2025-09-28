@@ -34,6 +34,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         setState(() {
           _product = Product.fromJson(response.data['data']);
           if (_product!.unitPrices.isNotEmpty) {
+            _selectedUnitIndex = 0; // Always select first unit
             _quantity = _product!.unitPrices[_selectedUnitIndex].step;
           }
         });
@@ -152,29 +153,35 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               const SizedBox(height: 16),
                             ],
                             
-                            // Unit Selection
+                            // Unit Display (Single Unit)
                             Text(
-                              'Select Unit',
+                              'Unit',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              children: List.generate(_product!.unitPrices.length, (index) {
-                                final unitPrice = _product!.unitPrices[index];
-                                return ChoiceChip(
-                                  label: Text('${unitPrice.baseQty} ${unitPrice.unit}'),
-                                  selected: _selectedUnitIndex == index,
-                                  onSelected: (selected) {
-                                    setState(() {
-                                      _selectedUnitIndex = index;
-                                      _quantity = unitPrice.step;
-                                    });
-                                  },
-                                );
-                              }),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _getUnitIcon(),
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _getUnitText(),
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 16),
                             
@@ -278,5 +285,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     if (_product == null || _product!.unitPrices.isEmpty) return 0.0;
     final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
     return selectedUnit.calculatePrice(_quantity);
+  }
+
+  IconData _getUnitIcon() {
+    if (_product == null || _product!.unitPrices.isEmpty) return Icons.shopping_bag;
+    
+    final unit = _product!.unitPrices[_selectedUnitIndex].unit.toLowerCase();
+    if (unit.contains('kg') || unit.contains('g') || unit.contains('weight')) {
+      return Icons.scale;
+    } else {
+      return Icons.shopping_bag;
+    }
+  }
+
+  String _getUnitText() {
+    if (_product == null || _product!.unitPrices.isEmpty) return 'Unit';
+    
+    final unitPrice = _product!.unitPrices[_selectedUnitIndex];
+    final unit = unitPrice.unit.toLowerCase();
+    
+    if (unit.contains('kg') || unit.contains('g') || unit.contains('weight')) {
+      return '${unitPrice.baseQty} kg';
+    } else {
+      return '${unitPrice.baseQty} pcs';
+    }
   }
 }

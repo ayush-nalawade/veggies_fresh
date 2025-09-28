@@ -6,7 +6,7 @@ class Env {
     if (Platform.isAndroid) {
       // For Android emulator, try multiple IPs
       // First try the host machine IP, then fallback to emulator IP
-      return 'http://192.168.0.4:3000';
+      return 'http://192.168.0.2:3000';
     } else if (Platform.isIOS) {
       // For iOS simulator, use localhost
       return 'http://localhost:3000';
