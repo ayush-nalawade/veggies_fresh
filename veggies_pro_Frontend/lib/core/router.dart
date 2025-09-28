@@ -78,9 +78,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/products/:categoryId',
-            builder: (context, state) => ProductListScreen(
-              categoryId: state.pathParameters['categoryId']!,
-            ),
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              return ProductListScreen(
+                categoryId: state.pathParameters['categoryId']!,
+                categoryName: extra != null ? extra['categoryName'] as String? : null,
+              );
+            },
           ),
           GoRoute(
             path: '/product/:productId',

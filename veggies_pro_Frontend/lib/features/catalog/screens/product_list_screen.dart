@@ -7,8 +7,9 @@ import '../../../models/product.dart';
 
 class ProductListScreen extends ConsumerStatefulWidget {
   final String categoryId;
+  final String? categoryName;
 
-  const ProductListScreen({super.key, required this.categoryId});
+  const ProductListScreen({super.key, required this.categoryId, this.categoryName});
 
   @override
   ConsumerState<ProductListScreen> createState() => _ProductListScreenState();
@@ -22,6 +23,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   @override
   void initState() {
     super.initState();
+    _categoryName = widget.categoryName ?? '';
     _loadProducts();
   }
 
@@ -35,9 +37,14 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
               .toList();
         });
         
-        // Get category name from first product
-        if (_products.isNotEmpty) {
-          _categoryName = _products.first.categoryId;
+        // If name wasn't passed, try to infer from nested category if available
+        if (_categoryName.isEmpty && _products.isNotEmpty) {
+          // Some responses may embed category object; try to read name if present
+          final first = response.data['data'][0];
+          final maybeCat = first['categoryId'];
+          if (maybeCat is Map && maybeCat['name'] is String) {
+            _categoryName = maybeCat['name'] as String;
+          }
         }
       }
     } catch (e) {
@@ -72,9 +79,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       padding: const EdgeInsets.all(16),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.72,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
                       ),
                       itemCount: _products.length,
                       itemBuilder: (context, index) {
