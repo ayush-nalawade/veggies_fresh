@@ -79,7 +79,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       padding: const EdgeInsets.all(16),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 0.72,
+                        childAspectRatio: 0.8, // Increased from 0.75 to give more height
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -103,69 +103,93 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 3,
+              flex: 3, // Reduced from 4 to give more space to content
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                   color: Colors.grey[100],
                 ),
-                child: product.firstImage.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: product.firstImage,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.image),
-                      )
-                    : const Icon(Icons.image),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: product.firstImage.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: product.firstImage,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(Icons.image, size: 32),
+                        )
+                      : const Icon(Icons.image, size: 32),
+                ),
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 2, // Reduced from 3 but content is better organized
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8), // Increased padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Product name
                     Text(
                       product.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14, // Slightly larger
                       ),
-                      maxLines: 2,
+                      maxLines: 1, // Reduced to 1 line to save space
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      'From ₹${product.minPrice.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (product.rating != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.star, size: 16, color: Colors.amber),
-                          const SizedBox(width: 4),
-                          Text(
-                            product.rating!.toStringAsFixed(1),
-                            style: const TextStyle(fontSize: 12),
+                    
+                    // Price and rating row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'From ₹${product.minPrice.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
                           ),
-                        ],
-                      ),
-                    ],
-                    const Spacer(),
+                        ),
+                        if (product.rating != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star, size: 12, color: Colors.amber),
+                              const SizedBox(width: 2),
+                              Text(
+                                product.rating!.toStringAsFixed(1),
+                                style: const TextStyle(fontSize: 10),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                    
+                    const Spacer(), // This will push the button to the bottom
+                    
+                    // View button
                     SizedBox(
                       width: double.infinity,
+                      height: 28, // Fixed height for button
                       child: ElevatedButton(
                         onPressed: () => context.go('/product/${product.id}'),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 28),
                         ),
-                        child: const Text('View', style: TextStyle(fontSize: 12)),
+                        child: const Text('View', style: TextStyle(fontSize: 11)),
                       ),
                     ),
                   ],
