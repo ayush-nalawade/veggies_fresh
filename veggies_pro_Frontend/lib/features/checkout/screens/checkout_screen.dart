@@ -191,12 +191,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       final orderResponse = await DioClient().dio.post('/checkout/create-order', data: {
         'address': {
           'line1': _selectedAddress!.line1,
-          'line2': _selectedAddress!.line2?.isNotEmpty == true ? _selectedAddress!.line2 : null,
+          'line2': _selectedAddress!.line2?.isNotEmpty == true ? _selectedAddress!.line2 : '',
           'city': _selectedAddress!.city,
           'state': _selectedAddress!.state,
           'pincode': _selectedAddress!.pincode,
           'country': _selectedAddress!.country,
-          'phone': _selectedAddress!.phone.isNotEmpty ? _selectedAddress!.phone : '0000000000',
+          'phone': _selectedAddress!.phone.isNotEmpty ? _selectedAddress!.phone : '1234567890',
         },
         'paymentMethod': _paymentMethod,
         'timeSlot': {
@@ -248,7 +248,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       'order_id': orderData['razorpayOrderId'],
       'prefill': {
         'email': 'user@example.com',
-        'contact': _selectedAddress?.phone.isNotEmpty == true ? _selectedAddress!.phone : '0000000000',
+        'contact': _selectedAddress?.phone.isNotEmpty == true ? _selectedAddress!.phone : '1234567890',
       },
       'theme': {
         'color': '#2E7D32'
