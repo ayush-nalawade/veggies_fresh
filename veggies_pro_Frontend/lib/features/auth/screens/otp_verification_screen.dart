@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../core/dio_client.dart';
-import 'user_details_screen.dart';
 
 class OTPVerificationScreen extends ConsumerStatefulWidget {
   final String phone;
@@ -24,6 +23,8 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   bool _isResending = false;
   int _resendTimer = 30;
   bool _canResend = false;
+  String? _otpErrorMessage;
+  bool _isOtpErrorVisible = false;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       _canResend = false;
       _resendTimer = 30;
     });
-    
+
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         if (_resendTimer > 0) {
@@ -55,6 +56,23 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
             _canResend = true;
           });
         }
+      }
+    });
+  }
+
+  void _showOtpError(String message) {
+    setState(() {
+      _otpErrorMessage = message;
+      _isOtpErrorVisible = true;
+    });
+
+    // Clear the error message after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _isOtpErrorVisible = false;
+          _otpErrorMessage = null;
+        });
       }
     });
   }
@@ -101,12 +119,18 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('OTP verification failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // Clear the OTP input when verification fails
+        _otpController.clear();
+
+        // Check if it's an OTP-related error (you can customize this based on your backend response)
+        String errorMessage = 'OTP verification failed';
+        if (e.toString().toLowerCase().contains('invalid') ||
+            e.toString().toLowerCase().contains('incorrect') ||
+            e.toString().toLowerCase().contains('wrong')) {
+          errorMessage = 'Incorrect OTP. Please try again.';
+        }
+
+        _showOtpError(errorMessage);
       }
     } finally {
       if (mounted) {
@@ -220,7 +244,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                   fieldWidth: 60,
                   activeFillColor: Colors.white,
                   inactiveFillColor: Colors.grey[100],
-                  selectedFillColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  selectedFillColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   activeColor: Theme.of(context).colorScheme.primary,
                   inactiveColor: Colors.grey[300],
                   selectedColor: Theme.of(context).colorScheme.primary,
@@ -231,6 +255,35 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                 },
                 onChanged: (value) {},
               ),
+
+              // Error message
+              if (_isOtpErrorVisible && _otpErrorMessage != null)
+                Container(
+                  margin: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red[700], size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _otpErrorMessage!,
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               const SizedBox(height: 30),
               
               // Verify button
