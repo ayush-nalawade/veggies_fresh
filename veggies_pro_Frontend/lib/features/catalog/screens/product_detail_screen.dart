@@ -91,10 +91,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          // onPressed: () => context.go('/products/${_product!.categoryId}'),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart),
-            onPressed: () => context.go('/cart'),
+            onPressed: () => context.push('/cart'),
           ),
         ],
       ),

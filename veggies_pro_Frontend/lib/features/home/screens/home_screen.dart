@@ -146,7 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       itemBuilder: (context, index) {
                         final category = _categories[index];
                         return GestureDetector(
-                          onTap: () => context.go('/products/${category.id}', extra: {
+                          onTap: () => context.push('/products/${category.id}', extra: {
                                 'categoryName': category.name,
                               }),
                           child: Container(

@@ -256,16 +256,25 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Orders'),
-        actions: [
-          IconButton(
-            onPressed: _loadOrders,
-            icon: const Icon(Icons.refresh),
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop();
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('My Orders'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
           ),
-        ],
-      ),
+          actions: [
+            IconButton(
+              onPressed: _loadOrders,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _orders.isEmpty
@@ -281,6 +290,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                     },
                   ),
                 ),
+      ),
     );
   }
 
@@ -310,7 +320,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.go('/categories'),
+            onPressed: () => context.push('/categories'),
             child: const Text('Start Shopping'),
           ),
         ],

@@ -35,7 +35,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
 
       if (response.statusCode == 200) {
         if (mounted) {
-          context.go('/auth/otp-verification', extra: {
+          context.push('/auth/otp-verification', extra: {
             'phone': _phoneController.text.trim(),
           });
         }

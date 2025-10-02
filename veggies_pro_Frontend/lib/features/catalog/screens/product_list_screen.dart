@@ -66,6 +66,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_categoryName.isNotEmpty ? _categoryName : 'Products'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -97,7 +101,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     return Card(
       elevation: 2,
       child: InkWell(
-        onTap: () => context.go('/product/${product.id}'),
+        onTap: () => context.push('/product/${product.id}'),
         borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +188,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                       width: double.infinity,
                       height: 28, // Fixed height for button
                       child: ElevatedButton(
-                        onPressed: () => context.go('/product/${product.id}'),
+                        onPressed: () => context.push('/product/${product.id}'),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 28),

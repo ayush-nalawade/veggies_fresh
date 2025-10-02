@@ -51,16 +51,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            onPressed: _loadProfile,
-            icon: const Icon(Icons.refresh),
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop();
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
           ),
-        ],
-      ),
+          actions: [
+            IconButton(
+              onPressed: _loadProfile,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _user == null
@@ -80,6 +89,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                 ),
+      ),
     );
   }
 

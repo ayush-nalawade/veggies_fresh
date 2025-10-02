@@ -84,7 +84,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
         if (data['isNewUser'] == true) {
           // New user - redirect to details screen
           if (mounted) {
-            context.go('/auth/user-details', extra: {
+            context.push('/auth/user-details', extra: {
               'tempToken': data['tempToken'],
             });
           }

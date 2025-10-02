@@ -143,17 +143,26 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shopping Cart'),
-        actions: [
-          if (_cart != null && _cart!.items.isNotEmpty)
-            TextButton(
-              onPressed: () => _clearCart(),
-              child: const Text('Clear'),
-            ),
-        ],
-      ),
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop();
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Shopping Cart'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
+          actions: [
+            if (_cart != null && _cart!.items.isNotEmpty)
+              TextButton(
+                onPressed: () => _clearCart(),
+                child: const Text('Clear'),
+              ),
+          ],
+        ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cart == null || _cart!.items.isEmpty
@@ -176,6 +185,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     _buildCartSummary(),
                   ],
                 ),
+      ),
     );
   }
 
@@ -205,7 +215,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.go('/categories'),
+            onPressed: () => context.push('/categories'),
             child: const Text('Start Shopping'),
           ),
         ],
@@ -350,7 +360,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => context.go('/checkout'),
+              onPressed: () => context.push('/checkout'),
               child: const Text('Proceed to Checkout'),
             ),
           ),

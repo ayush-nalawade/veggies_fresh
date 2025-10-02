@@ -317,7 +317,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return WillPopScope(
       onWillPop: () async {
         // Navigate back to cart when back button is pressed
-        context.go('/cart');
+        context.pop();
         return false;
       },
       child: Scaffold(
@@ -325,7 +325,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           title: const Text('Checkout'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/cart'),
+            onPressed: () => context.pop(),
           ),
           actions: [
             IconButton(
@@ -385,7 +385,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.go('/categories'),
+            onPressed: () => context.push('/categories'),
             child: const Text('Start Shopping'),
           ),
         ],

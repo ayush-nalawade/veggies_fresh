@@ -70,7 +70,9 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                   return Card(
                     elevation: 2,
                     child: InkWell(
-                      onTap: () => context.go('/products/${category.id}'),
+                      onTap: () => context.push('/products/${category.id}', extra: {
+                        'categoryName': category.name,
+                      }),
                       borderRadius: BorderRadius.circular(12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
