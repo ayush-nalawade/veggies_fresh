@@ -268,7 +268,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                '${_quantity.toStringAsFixed(_quantity % 1 == 0 ? 0 : 2)} ${selectedUnit.unit}',
+                _getQuantityDisplayText(),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -305,14 +305,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   String _getUnitText() {
     if (_product == null || _product!.unitPrices.isEmpty) return 'Unit';
-    
+
     final unitPrice = _product!.unitPrices[_selectedUnitIndex];
     final unit = unitPrice.unit.toLowerCase();
-    
+
     if (unit.contains('kg') || unit.contains('g') || unit.contains('weight')) {
       return '${unitPrice.baseQty} kg';
     } else {
       return '${unitPrice.baseQty} pcs';
+    }
+  }
+
+  String _getQuantityDisplayText() {
+    if (_quantity < 1.0 && (_product!.unitPrices[_selectedUnitIndex].unit.toLowerCase().contains('kg'))) {
+      // Convert kg to grams for display when quantity is less than 1 kg
+      final grams = (_quantity * 1000).toInt();
+      return '${grams} gm';
+    } else {
+      // Show normal display for other cases
+      return '${_quantity.toStringAsFixed(_quantity % 1 == 0 ? 0 : 2)} ${_product!.unitPrices[_selectedUnitIndex].unit}';
     }
   }
 }
