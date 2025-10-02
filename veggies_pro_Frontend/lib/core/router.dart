@@ -134,18 +134,25 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   final Widget child;
 
   const MainShell({super.key, required this.child});
 
   @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  static int _selectedIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        currentIndex: _getCurrentIndex(context),
+        currentIndex: _selectedIndex,
         onTap: (index) => _onTap(context, index),
         items: const [
           BottomNavigationBarItem(
@@ -169,16 +176,15 @@ class MainShell extends StatelessWidget {
     );
   }
 
-  int _getCurrentIndex(BuildContext context) {
-    final location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/cart')) return 1;
-    if (location.startsWith('/orders')) return 2;
-    if (location.startsWith('/profile')) return 3;
-    return 0;
+  static void updateSelectedIndex(int index) {
+    _selectedIndex = index;
   }
 
   void _onTap(BuildContext context, int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    
     switch (index) {
       case 0:
         context.go('/home');
