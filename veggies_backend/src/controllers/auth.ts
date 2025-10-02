@@ -41,7 +41,7 @@ const generateTokens = (userId: string) => {
   const accessToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET!,
-    { expiresIn: '1h' } // Extended to 1 hour
+    { expiresIn: '24h' } // Extended to 1 hour
   );
   
   const refreshToken = jwt.sign(
