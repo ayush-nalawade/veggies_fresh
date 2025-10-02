@@ -642,12 +642,28 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         onChanged: (value) {
           setState(() {
             _selectedSlot = value;
+            // Auto-select the date if not already selected
+            if (_selectedTimeSlot == null && value != null) {
+              _selectedTimeSlot = _timeSlots.firstWhere(
+                (timeSlot) => timeSlot.slots.any((slot) =>
+                  slot.startTime == value.startTime && slot.endTime == value.endTime
+                ),
+              );
+            }
           });
         },
       ),
       onTap: () {
         setState(() {
           _selectedSlot = slot;
+          // Auto-select the date if not already selected
+          if (_selectedTimeSlot == null) {
+            _selectedTimeSlot = _timeSlots.firstWhere(
+              (timeSlot) => timeSlot.slots.any((s) =>
+                s.startTime == slot.startTime && s.endTime == slot.endTime
+              ),
+            );
+          }
         });
       },
     );
