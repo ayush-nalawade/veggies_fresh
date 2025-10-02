@@ -105,21 +105,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Delivered to your doorstep',
+                            'Free delivery on orders above ₹200',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white70,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () => context.go('/categories'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Theme.of(context).colorScheme.primary,
-                            ),
-                            child: const Text('Shop Now'),
-                          ),
+                          // ElevatedButton(
+                          //   onPressed: () => context.go('/'),
+                          //   style: ElevatedButton.styleFrom(
+                          //     backgroundColor: Colors.white,
+                          //     foregroundColor: Theme.of(context).colorScheme.primary,
+                          //   ),
+                          //   child: const Text('Shop Now'),
+                          // ),
                         ],
                       ),
                     ),
