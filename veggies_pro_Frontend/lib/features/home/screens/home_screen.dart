@@ -56,9 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: Implement search
-            },
+            onPressed: () => context.push('/search'),
           ),
           IconButton(
             icon: const Icon(Icons.notifications),

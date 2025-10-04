@@ -7,6 +7,7 @@ import '../features/auth/screens/phone_login_screen.dart';
 import '../features/auth/screens/otp_verification_screen.dart';
 import '../features/auth/screens/user_details_screen.dart';
 import '../features/home/screens/home_screen.dart';
+import '../features/home/screens/search_screen.dart';
 import '../features/catalog/screens/product_list_screen.dart';
 import '../features/catalog/screens/product_detail_screen.dart';
 import '../features/cart/screens/cart_screen.dart';
@@ -75,6 +76,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/home',
             builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/search',
+            builder: (context, state) => const SearchScreen(),
           ),
           GoRoute(
             path: '/products/:categoryId',

@@ -13,7 +13,12 @@ export const getProducts = async (req: Request, res: Response) => {
     }
     
     if (q) {
-      query.$text = { $search: q as string };
+      // Use regex for partial/substring matching (case-insensitive)
+      const searchRegex = new RegExp(q as string, 'i');
+      query.$or = [
+        { name: searchRegex },
+        { description: searchRegex }
+      ];
     }
 
     const limitNum = parseInt(limit as string);
@@ -22,7 +27,7 @@ export const getProducts = async (req: Request, res: Response) => {
 
     const products = await Product.find(query)
       .populate('categoryId', 'name')
-      .select('name slug images unitPrices rating')
+      .select('name slug images unitPrices rating description')
       .sort({ createdAt: -1 })
       .limit(limitNum)
       .skip(skip);
