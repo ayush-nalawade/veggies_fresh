@@ -84,24 +84,24 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
         await ProfileService().updateAddress(widget.address!.id!, address);
       }
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.address == null ? 'Address added successfully' : 'Address updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.pop(true); // Return true to indicate success
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.address == null ? 'Address added successfully' : 'Address updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.pop(true); // Return true to indicate success
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save address: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save address: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -205,9 +205,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           title: 'Notifications',
           subtitle: 'Manage your notification preferences',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Notifications feature coming soon')),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Notifications feature coming soon')),
+              );
+            }
           },
         ),
         _buildMenuItem(
@@ -215,9 +217,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           title: 'Help & Support',
           subtitle: 'Get help and contact support',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Help & Support feature coming soon')),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Help & Support feature coming soon')),
+              );
+            }
           },
         ),
       ],

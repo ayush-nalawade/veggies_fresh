@@ -135,9 +135,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       child: IconButton(
                         onPressed: () {
                           // TODO: Implement image picker
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Image picker not implemented yet')),
-                          );
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Image picker not implemented yet')),
+                            );
+                          }
                         },
                         icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),

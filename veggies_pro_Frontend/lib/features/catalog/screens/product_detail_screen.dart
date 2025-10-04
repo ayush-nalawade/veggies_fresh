@@ -54,7 +54,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   Future<void> _addToCart() async {
-    if (_product == null) return;
+    if (_product == null || !mounted) return;
 
     try {
       final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
@@ -64,25 +64,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         'qty': _quantity,
       });
 
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Added to cart successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add to cart: ${e.toString()}'),
-            backgroundColor: Colors.red,
+          const SnackBar(
+            content: Text('Added to cart successfully!'),
+            backgroundColor: Colors.green,
           ),
         );
       }
+    } catch (e) {
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add to cart: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

@@ -85,28 +85,28 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         'qty': newQuantity,
       });
 
+      if (!mounted) return;
+
       print('Update response: ${response.statusCode} - ${response.data}'); // Debug log
       if (response.statusCode == 200) {
         _loadCart(); // Reload cart
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Quantity updated successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      print('Update quantity error: $e'); // Debug log
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update quantity: ${e.toString()}'),
-            backgroundColor: Colors.red,
+          const SnackBar(
+            content: Text('Quantity updated successfully'),
+            backgroundColor: Colors.green,
           ),
         );
       }
+    } catch (e) {
+      print('Update quantity error: $e'); // Debug log
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update quantity: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

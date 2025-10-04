@@ -35,6 +35,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   @override
   void dispose() {
     _otpController.dispose();
+    _resendTimer = 0; // Stop the timer
     super.dispose();
   }
 
@@ -79,12 +80,14 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
 
   Future<void> _verifyOTP() async {
     if (_otpController.text.length != 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid 4-digit OTP'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a valid 4-digit OTP'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 

@@ -165,22 +165,26 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _proceedToPayment() async {
     if (_selectedAddress == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a delivery address'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a delivery address'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
     if (_selectedTimeSlot == null || _selectedSlot == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a delivery time slot'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a delivery time slot'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -206,34 +210,34 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         }
       });
 
+      if (!mounted) return;
+
       if (orderResponse.statusCode == 200) {
         final orderData = orderResponse.data['data'];
         
         if (_paymentMethod == 'cod') {
           // COD order - show success message
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Order placed successfully! You will pay on delivery.'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            context.go('/orders');
-          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Order placed successfully! You will pay on delivery.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.go('/orders');
         } else {
           // Razorpay payment
           _openRazorpayCheckout(orderData);
         }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create order: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to create order: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       setState(() => _isProcessingPayment = false);
     }
