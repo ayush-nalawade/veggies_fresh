@@ -39,13 +39,19 @@ class _UserDetailsScreenState extends ConsumerState<UserDetailsScreen> {
     setState(() => _isLoading = true);
 
     try {
+
+      final data = {
+        'name': _nameController.text.trim(),
+        'city': _selectedCity,
+      };
+
+      // Only add email if it's not empty
+      if (_emailController.text.trim().isNotEmpty) {
+        data['email'] = _emailController.text.trim();
+      }
       final response = await DioClient().dio.post(
         '/auth/complete-profile',
-        data: {
-          'name': _nameController.text.trim(),
-          'email': _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-          'city': _selectedCity,
-        },
+        data: data,
         options: Options(
           headers: {
             'Authorization': 'Bearer ${widget.tempToken}',
