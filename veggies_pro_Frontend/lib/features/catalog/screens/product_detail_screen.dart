@@ -67,20 +67,56 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
+        // Clear any existing snackbars
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Added to cart successfully!'),
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Added ${_quantity} ${selectedUnit.unit} to cart!',
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                ),
+              ],
+            ),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
     } catch (e) {
       if (!mounted) return;
       
+      // Extract user-friendly error message
+      String errorMessage = 'Failed to add to cart';
+      
+      if (e.toString().contains('Insufficient stock')) {
+        errorMessage = 'Insufficient stock available for this quantity';
+      } else if (e.toString().contains('Product not found')) {
+        errorMessage = 'This product is no longer available';
+      } else if (e.toString().contains('Invalid unit')) {
+        errorMessage = 'Invalid unit selected';
+      }
+      
+      // Clear any existing snackbars
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add to cart: ${e.toString()}'),
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              Expanded(child: Text(errorMessage)),
+            ],
+          ),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

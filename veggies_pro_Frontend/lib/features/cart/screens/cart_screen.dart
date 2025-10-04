@@ -75,9 +75,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       // Round to 2 decimal places and ensure minimum quantity
       newQuantity = double.parse(newQuantity.toStringAsFixed(2));
       
-      // If quantity is 0 or negative, remove the item
+      // If quantity is 0 or negative, show confirmation before removing
       if (newQuantity <= 0) {
-        _removeItem(productId);
+        // Find the item name for confirmation dialog
+        final item = _cart?.items.firstWhere(
+          (item) => item.productId == productId,
+          orElse: () => _cart!.items.first,
+        );
+        await _confirmAndRemoveItem(productId, item?.name ?? 'this item');
         return;
       }
       
@@ -89,55 +94,92 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
       print('Update response: ${response.statusCode} - ${response.data}'); // Debug log
       if (response.statusCode == 200) {
-        _loadCart(); // Reload cart
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Quantity updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        _loadCart(); // Reload cart silently
       }
     } catch (e) {
       print('Update quantity error: $e'); // Debug log
       if (!mounted) return;
       
+      // Only show error messages, not success messages
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update quantity: ${e.toString()}'),
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              const Expanded(child: Text('Failed to update quantity')),
+            ],
+          ),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
         ),
       );
     }
   }
 
-  Future<void> _removeItem(String productId) async {
+  Future<void> _confirmAndRemoveItem(String productId, String productName) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Item'),
+          content: Text('Are you sure you want to remove "$productName" from your cart?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Remove'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If not confirmed, return
+    if (confirmed != true || !mounted) return;
+
+    // Proceed with removal
     try {
       print('Removing item with productId: $productId'); // Debug log
       
       final response = await DioClient().dio.delete('/cart/items/$productId');
 
+      if (!mounted) return;
+
       print('Remove response: ${response.statusCode} - ${response.data}'); // Debug log
       if (response.statusCode == 200) {
-        _loadCart(); // Reload cart
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Item removed from cart'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
+        _loadCart(); // Reload cart silently
       }
     } catch (e) {
       print('Remove item error: $e'); // Debug log
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to remove item: ${e.toString()}'),
-            backgroundColor: Colors.red,
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              const Expanded(child: Text('Failed to remove item')),
+            ],
           ),
-        );
-      }
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -314,8 +356,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   ],
                 ),
                 IconButton(
-                  onPressed: () => _removeItem(item.productId),
+                  onPressed: () => _confirmAndRemoveItem(item.productId, item.name),
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  tooltip: 'Remove item',
                 ),
               ],
             ),
@@ -373,25 +416,25 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     try {
       final response = await DioClient().dio.delete('/cart');
       if (response.statusCode == 200) {
-        _loadCart();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Cart cleared'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
+        _loadCart(); // Reload cart silently
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to clear cart: ${e.toString()}'),
-            backgroundColor: Colors.red,
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              const Expanded(child: Text('Failed to clear cart')),
+            ],
           ),
-        );
-      }
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 }
