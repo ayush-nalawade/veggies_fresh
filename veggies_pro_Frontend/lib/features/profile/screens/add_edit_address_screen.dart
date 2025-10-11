@@ -22,7 +22,6 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   final _stateController = TextEditingController();
   final _pincodeController = TextEditingController();
   final _countryController = TextEditingController();
-  final _phoneController = TextEditingController();
   
   String _selectedType = 'home';
   bool _isDefault = false;
@@ -31,15 +30,16 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   @override
   void initState() {
     super.initState();
+    // Set default values for City, State, and Country
+    _cityController.text = 'Mumbai';
+    _stateController.text = 'Maharashtra';
+    _countryController.text = 'India';
+    
     if (widget.address != null) {
       _nameController.text = widget.address!.name;
       _line1Controller.text = widget.address!.line1;
       _line2Controller.text = widget.address!.line2 ?? '';
-      _cityController.text = widget.address!.city;
-      _stateController.text = widget.address!.state;
       _pincodeController.text = widget.address!.pincode;
-      _countryController.text = widget.address!.country;
-      _phoneController.text = widget.address!.phone;
       _selectedType = widget.address!.type;
       _isDefault = widget.address!.isDefault;
     }
@@ -54,7 +54,6 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     _stateController.dispose();
     _pincodeController.dispose();
     _countryController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
@@ -74,7 +73,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
         state: _stateController.text.trim(),
         pincode: _pincodeController.text.trim(),
         country: _countryController.text.trim(),
-        phone: _phoneController.text.trim(),
+        phone: '1234567890', // Default phone number
         isDefault: _isDefault,
       );
 
@@ -135,10 +134,21 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             // Address Type
             DropdownButtonFormField<String>(
               value: _selectedType,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Address Type',
-                prefixIcon: Icon(Icons.category),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.category),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
               items: const [
                 DropdownMenuItem(value: 'home', child: Text('Home')),
@@ -154,10 +164,21 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             // Address Name
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Address Name (e.g., My Home)',
-                prefixIcon: Icon(Icons.label),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.label),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -174,10 +195,21 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             // Address Line 1
             TextFormField(
               controller: _line1Controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Address Line 1 *',
-                prefixIcon: Icon(Icons.location_on),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.location_on),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -194,61 +226,134 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             // Address Line 2
             TextFormField(
               controller: _line2Controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Address Line 2 (Optional)',
-                prefixIcon: Icon(Icons.location_city),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.location_city),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
             ),
             const SizedBox(height: 16),
 
-            // City
+            // Pre-filled Location Info
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'We are currently delivering in Mumbai only',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // City (Read-only)
             TextFormField(
               controller: _cityController,
-              decoration: const InputDecoration(
+              enabled: false,
+              decoration: InputDecoration(
                 labelText: 'City *',
-                prefixIcon: Icon(Icons.location_city),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.location_city, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                hintStyle: const TextStyle(color: Colors.grey),
+                labelStyle: const TextStyle(color: Colors.grey),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'City is required';
-                }
-                if (value.trim().length < 2) {
-                  return 'City must be at least 2 characters';
-                }
-                return null;
-              },
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 16),
 
-            // State
+            // State (Read-only)
             TextFormField(
               controller: _stateController,
-              decoration: const InputDecoration(
+              enabled: false,
+              decoration: InputDecoration(
                 labelText: 'State *',
-                prefixIcon: Icon(Icons.map),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.map, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                hintStyle: const TextStyle(color: Colors.grey),
+                labelStyle: const TextStyle(color: Colors.grey),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'State is required';
-                }
-                if (value.trim().length < 2) {
-                  return 'State must be at least 2 characters';
-                }
-                return null;
-              },
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 16),
 
             // Pincode
             TextFormField(
               controller: _pincodeController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Pincode *',
-                prefixIcon: Icon(Icons.pin_drop),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.pin_drop),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -263,44 +368,35 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Country
+            // Country (Read-only)
             TextFormField(
               controller: _countryController,
-              decoration: const InputDecoration(
+              enabled: false,
+              decoration: InputDecoration(
                 labelText: 'Country *',
-                prefixIcon: Icon(Icons.public),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.public, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                hintStyle: const TextStyle(color: Colors.grey),
+                labelStyle: const TextStyle(color: Colors.grey),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Country is required';
-                }
-                if (value.trim().length < 2) {
-                  return 'Country must be at least 2 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Phone
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number *',
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
               ),
-              keyboardType: TextInputType.phone,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Phone number is required';
-                }
-                if (value.trim().length < 10) {
-                  return 'Phone number must be at least 10 digits';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 16),
 
@@ -321,13 +417,31 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _saveAddress,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[600],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
                 child: _isLoading
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
                       )
-                    : Text(widget.address == null ? 'Add Address' : 'Update Address'),
+                    : Text(
+                        widget.address == null ? 'Add Address' : 'Update Address',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
           ],
