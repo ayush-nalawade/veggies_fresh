@@ -1,6 +1,32 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'auth_utils.dart';
 
 class ErrorHandler {
+  /// Handles errors and automatically logs out on auth failures
+  static Future<void> handleError(BuildContext context, dynamic error) async {
+    if (error is DioException) {
+      final statusCode = error.response?.statusCode;
+      
+      // Handle authentication errors
+      if (statusCode == 401 || statusCode == 403) {
+        await AuthUtils.logout(context);
+        return;
+      }
+    }
+    
+    // For other errors, show appropriate message
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(extractErrorMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   static String extractErrorMessage(dynamic error) {
     if (error is DioException) {
       // Check for network errors

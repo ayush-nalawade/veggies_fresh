@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/address.dart';
 import '../../../services/profile_service.dart';
+import '../../../core/error_handler.dart';
 
 class AddEditAddressScreen extends ConsumerStatefulWidget {
   final Address? address; // null for add, Address for edit
@@ -95,12 +96,8 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     } catch (e) {
       if (!mounted) return;
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to save address: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Use centralized error handling
+      await ErrorHandler.handleError(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../models/user.dart';
 import '../../../services/profile_service.dart';
+import '../../../core/error_handler.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -29,12 +30,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       setState(() => _user = user);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to load profile: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // Use centralized error handling
+        await ErrorHandler.handleError(context, e);
       }
     } finally {
       setState(() => _isLoading = false);
@@ -45,6 +42,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     const storage = FlutterSecureStorage();
     await storage.deleteAll();
     if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logged out successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
       context.go('/auth/phone-login');
     }
   }

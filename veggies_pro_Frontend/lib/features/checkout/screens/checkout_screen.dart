@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../../core/dio_client.dart';
 import '../../../core/env.dart';
+import '../../../core/error_handler.dart';
 import '../../../models/cart.dart';
 import '../../../models/address.dart';
 import '../../../services/profile_service.dart';
@@ -232,12 +233,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     } catch (e) {
       if (!mounted) return;
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to create order: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Use centralized error handling
+      await ErrorHandler.handleError(context, e);
     } finally {
       setState(() => _isProcessingPayment = false);
     }
@@ -284,12 +281,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Payment verification failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // Use centralized error handling
+        await ErrorHandler.handleError(context, e);
       }
     }
   }

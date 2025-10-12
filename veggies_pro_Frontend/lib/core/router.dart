@@ -27,14 +27,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       const storage = FlutterSecureStorage();
       final token = await storage.read(key: 'access_token');
       final isAuthRoute = state.uri.path.startsWith('/auth');
+      final isSplashRoute = state.uri.path == '/splash';
       
       print('Router redirect - Path: ${state.uri.path}, Token: ${token != null ? "exists" : "null"}, isAuthRoute: $isAuthRoute');
       
-      if (token == null && !isAuthRoute && state.uri.path != '/splash') {
+      // If no token and not on auth/splash routes, redirect to login
+      if (token == null && !isAuthRoute && !isSplashRoute) {
         print('Redirecting to phone login - no token');
         return '/auth/phone-login';
       }
       
+      // If token exists and on auth routes, redirect to home
       if (token != null && isAuthRoute) {
         print('Redirecting to home - token exists and on auth route');
         return '/home';
@@ -44,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // Auth routes (no bottom navigation)
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
@@ -70,6 +74,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      // Checkout route (no bottom navigation)
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      // Main app routes (with bottom navigation)
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
         routes: [
@@ -131,10 +141,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      GoRoute(
-        path: '/checkout',
-        builder: (context, state) => const CheckoutScreen(),
-      ),
     ],
   );
 });
@@ -195,13 +201,13 @@ class _MainShellState extends State<MainShell> {
         context.go('/home');
         break;
       case 1:
-        context.push('/cart');
+        context.go('/cart');
         break;
       case 2:
-        context.push('/orders');
+        context.go('/orders');
         break;
       case 3:
-        context.push('/profile');
+        context.go('/profile');
         break;
     }
   }
