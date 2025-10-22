@@ -93,7 +93,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       if (!mounted) return;
       
       // Extract user-friendly error message
-      String errorMessage = 'Failed to add to cart';
+      String errorMessage = 'Item already in cart you can change the quantity';
       
       if (e.toString().contains('Insufficient stock')) {
         errorMessage = 'Insufficient stock available for this quantity';

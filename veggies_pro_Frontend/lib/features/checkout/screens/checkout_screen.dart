@@ -69,6 +69,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   bool _isLoading = true;
   bool _isProcessingPayment = false;
   final PaymentService _paymentService = PaymentService();
+  Map<String, bool> _expandedTimeSlots = {}; // Track which time slots are expanded
 
   @override
   void initState() {
@@ -587,28 +588,90 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Widget _buildTimeSlotCard(TimeSlot timeSlot) {
     final isSelected = _selectedTimeSlot?.date == timeSlot.date;
+    final isExpanded = _expandedTimeSlots[timeSlot.date] ?? false;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ExpansionTile(
-        title: Text(
-          timeSlot.display,
-          style: TextStyle(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Theme.of(context).colorScheme.primary : null,
+      child: Column(
+        children: [
+          // Main date selection row
+          InkWell(
+            onTap: () {
+              setState(() {
+                _selectedTimeSlot = timeSlot;
+                _selectedSlot = null; // Reset slot selection
+                // Toggle expansion for this time slot
+                _expandedTimeSlots[timeSlot.date] = !isExpanded;
+                // Close other expanded time slots
+                _expandedTimeSlots.updateAll((key, value) => key == timeSlot.date ? !isExpanded : false);
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: isExpanded 
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    )
+                  : BorderRadius.circular(12),
+                border: isSelected
+                  ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+                  : null,
+              ),
+              child: Row(
+                children: [
+                  Radio<String>(
+                    value: timeSlot.date,
+                    groupValue: _selectedTimeSlot?.date,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTimeSlot = timeSlot;
+                        _selectedSlot = null; // Reset slot selection
+                        // Toggle expansion for this time slot
+                        _expandedTimeSlots[timeSlot.date] = !isExpanded;
+                        // Close other expanded time slots
+                        _expandedTimeSlots.updateAll((key, value) => key == timeSlot.date ? !isExpanded : false);
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      timeSlot.display,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    color: Colors.grey[600],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        leading: Radio<String>(
-          value: timeSlot.date,
-          groupValue: _selectedTimeSlot?.date,
-          onChanged: (value) {
-            setState(() {
-              _selectedTimeSlot = timeSlot;
-              _selectedSlot = null; // Reset slot selection
-            });
-          },
-        ),
-        children: timeSlot.slots.map((slot) => _buildSlotOption(slot)).toList(),
+          // Time slots dropdown
+          if (isExpanded) ...[
+            const Divider(height: 1),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: Column(
+                children: timeSlot.slots.map((slot) => _buildSlotOption(slot)).toList(),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -617,38 +680,38 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final isSelected = _selectedSlot?.startTime == slot.startTime && 
                       _selectedSlot?.endTime == slot.endTime;
     
-    return ListTile(
-      title: Text(slot.display),
-      leading: Radio<SlotOption>(
-        value: slot,
-        groupValue: _selectedSlot,
-        onChanged: (value) {
-          setState(() {
-            _selectedSlot = value;
-            // Auto-select the date if not already selected
-            if (_selectedTimeSlot == null && value != null) {
-              _selectedTimeSlot = _timeSlots.firstWhere(
-                (timeSlot) => timeSlot.slots.any((slot) =>
-                  slot.startTime == value.startTime && slot.endTime == value.endTime
-                ),
-              );
-            }
-          });
-        },
-      ),
+    return InkWell(
       onTap: () {
         setState(() {
           _selectedSlot = slot;
-          // Auto-select the date if not already selected
-          if (_selectedTimeSlot == null) {
-            _selectedTimeSlot = _timeSlots.firstWhere(
-              (timeSlot) => timeSlot.slots.any((s) =>
-                s.startTime == slot.startTime && s.endTime == slot.endTime
-              ),
-            );
-          }
         });
       },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Radio<SlotOption>(
+              value: slot,
+              groupValue: _selectedSlot,
+              onChanged: (value) {
+                setState(() {
+                  _selectedSlot = value;
+                });
+              },
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                slot.display,
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
