@@ -320,7 +320,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.push('/categories'),
+            onPressed: () => context.push('/home'),
             child: const Text('Start Shopping'),
           ),
         ],

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../../core/dio_client.dart';
-import '../../../core/env.dart';
 import '../../../core/error_handler.dart';
+import '../../../core/payment_service.dart';
 import '../../../models/cart.dart';
 import '../../../models/address.dart';
 import '../../../services/profile_service.dart';
@@ -69,21 +68,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   double _deliveryFee = 0;
   bool _isLoading = true;
   bool _isProcessingPayment = false;
-  late Razorpay _razorpay;
+  final PaymentService _paymentService = PaymentService();
 
   @override
   void initState() {
     super.initState();
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    _paymentService.initialize();
     _loadData();
   }
 
   @override
   void dispose() {
-    _razorpay.clear();
+    _paymentService.dispose();
     super.dispose();
   }
 
@@ -165,27 +161,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Future<void> _proceedToPayment() async {
-    if (_selectedAddress == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a delivery address'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-      return;
-    }
-
-    if (_selectedTimeSlot == null || _selectedSlot == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a delivery time slot'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    // Validate all required fields
+    if (!_validateCheckoutData()) {
       return;
     }
 
@@ -218,16 +195,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         
         if (_paymentMethod == 'cod') {
           // COD order - show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Order placed successfully! You will pay on delivery.'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          _showSuccessMessage('Order placed successfully! You will pay on delivery.');
           context.go('/orders');
         } else {
           // Razorpay payment
-          _openRazorpayCheckout(orderData);
+          await _processRazorpayPayment(orderData);
         }
       }
     } catch (e) {
@@ -240,82 +212,96 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
   }
 
-  void _openRazorpayCheckout(Map<String, dynamic> orderData) {
-    var options = {
-      'key': Env.razorpayKeyId,
-      'amount': orderData['amount'],
-      'currency': 'INR',
-      'name': 'VeggieFresh',
-      'order_id': orderData['razorpayOrderId'],
-      'prefill': {
-        'email': 'user@example.com',
-        'contact': _selectedAddress?.phone.isNotEmpty == true ? _selectedAddress!.phone : '1234567890',
-      },
-      'theme': {
-        'color': '#2E7D32'
-      }
-    };
+  /// Validate all checkout data before proceeding
+  bool _validateCheckoutData() {
+    // Check if cart has items
+    if (_cart == null || _cart!.items.isEmpty) {
+      _showErrorMessage('Your cart is empty. Please add items before checkout.');
+      return false;
+    }
 
-    _razorpay.open(options);
+    // Check if address is selected
+    if (_selectedAddress == null) {
+      _showErrorMessage('Please select a delivery address');
+      return false;
+    }
+
+    // Check if time slot is selected
+    if (_selectedTimeSlot == null || _selectedSlot == null) {
+      _showErrorMessage('Please select a delivery time slot');
+      return false;
+    }
+
+    // Validate cart total
+    if (_cart!.subtotal <= 0) {
+      _showErrorMessage('Invalid cart total. Please refresh and try again.');
+      return false;
+    }
+
+    return true;
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    try {
-      final verifyResponse = await DioClient().dio.post('/checkout/verify-payment', data: {
-        'razorpayOrderId': response.orderId,
-        'paymentId': response.paymentId,
-        'signature': response.signature,
-        'orderId': response.orderId,
-      });
+  /// Show success message
+  void _showSuccessMessage(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
-      if (verifyResponse.statusCode == 200) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment successful! Order placed.'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          context.go('/orders');
-        }
-      }
+  /// Show error message
+  void _showErrorMessage(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  /// Process Razorpay payment with comprehensive error handling
+  Future<void> _processRazorpayPayment(Map<String, dynamic> orderData) async {
+    try {
+      await _paymentService.processPayment(
+        context: context,
+        orderData: orderData,
+        onSuccess: () {
+          // Payment successful - redirect to orders
+          if (mounted) {
+            context.go('/orders');
+          }
+        },
+        onError: (errorMessage) {
+          // Payment failed - show error and stay on checkout
+          if (mounted) {
+            setState(() => _isProcessingPayment = false);
+          }
+        },
+      );
     } catch (e) {
       if (mounted) {
-        // Use centralized error handling
+        setState(() => _isProcessingPayment = false);
         await ErrorHandler.handleError(context, e);
       }
     }
   }
 
-  void _handlePaymentError(PaymentFailureResponse response) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment failed: ${response.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('External wallet selected: ${response.walletName}'),
-          backgroundColor: Colors.blue,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Navigate back to cart when back button is pressed
-        context.pop();
-        return false;
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          // Navigate back to cart when back button is pressed
+          context.pop();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -382,7 +368,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.push('/categories'),
+            onPressed: () => context.push('/home'),
             child: const Text('Start Shopping'),
           ),
         ],
@@ -706,6 +692,33 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ],
           ),
         ),
+        if (_paymentMethod == 'razorpay') ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.security, color: Colors.blue.shade600, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Your payment is secured with 256-bit SSL encryption',
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -834,9 +847,48 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: _isProcessingPayment ? null : _proceedToPayment,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _paymentMethod == 'cod' ? Colors.orange : Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+        ),
         child: _isProcessingPayment
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Text(_paymentMethod == 'cod' ? 'Place Order (COD)' : 'Proceed to Payment'),
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Processing...'),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _paymentMethod == 'cod' ? Icons.money : Icons.payment,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _paymentMethod == 'cod' ? 'Place Order (COD)' : 'Proceed to Payment',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

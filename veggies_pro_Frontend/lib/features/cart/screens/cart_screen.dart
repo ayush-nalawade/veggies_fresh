@@ -257,7 +257,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.push('/categories'),
+            onPressed: () => context.push('/home'),
             child: const Text('Start Shopping'),
           ),
         ],

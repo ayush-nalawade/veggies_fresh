@@ -1842,3 +1842,206 @@
 {"level":"info","message":"::ffff:192.168.0.2 - - [02/Oct/2025:07:32:59 +0000] \"GET /orders HTTP/1.1\" 200 6394 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-02T07:32:59.205Z"}
 {"level":"info","message":"::ffff:192.168.0.2 - - [02/Oct/2025:07:33:02 +0000] \"GET /profile HTTP/1.1\" 200 697 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-02T07:33:02.051Z"}
 {"level":"info","message":"::ffff:192.168.0.2 - - [02/Oct/2025:07:33:06 +0000] \"GET /cart HTTP/1.1\" 200 1271 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-02T07:33:06.809Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-12T06:27:45.459Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-12T06:27:45.465Z"}
+{"level":"info","message":"OTP sent to 8779635639, Message SID: SM58f6a925ededfc4c280ace2148df9029","service":"veggiefresh-api","timestamp":"2025-10-12T06:35:50.331Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:35:50 +0000] \"POST /auth/send-otp HTTP/1.1\" 200 50 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:35:50.335Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:04 +0000] \"POST /auth/verify-otp HTTP/1.1\" 200 572 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:04.743Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:04 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:04.873Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:06 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:06.340Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:07.740Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:07.772Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:07 +0000] \"GET /orders HTTP/1.1\" 200 11539 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:07.775Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:08 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:08.620Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:36:09 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:36:09.655Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:37:49 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:37:49.516Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:37:51 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:37:51.693Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:06:37:55 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T06:37:55.122Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:38.663Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:38.666Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:50 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:50.992Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:52 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:52.581Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:54.376Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:54.428Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:54 +0000] \"GET /orders HTTP/1.1\" 200 11539 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:54.431Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:55 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:55.671Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:56 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:56.878Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:58 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:58.425Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:55:59 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:55:59.473Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:00 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:00.984Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:03 +0000] \"GET /products?category=68cb58d467222d3046f07e3a HTTP/1.1\" 200 2588 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:03.071Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:04 +0000] \"GET /products/68cb58d467222d3046f07e45 HTTP/1.1\" 200 630 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:04.832Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:09 +0000] \"POST /cart/items HTTP/1.1\" 200 434 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:09.568Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:14 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:14.248Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:17 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:17.497Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:17 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:17.498Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:17 +0000] \"GET /checkout/time-slots HTTP/1.1\" 200 967 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:17.530Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:56:52 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:56:52.971Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:10:57:15 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T10:57:15.477Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-12T11:01:17.283Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-12T11:01:17.285Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:01:29 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:01:29.681Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:01:39 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:01:39.046Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:14:47 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:14:47.095Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:16:18 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:16:18.970Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:16:20 +0000] \"GET /checkout/time-slots HTTP/1.1\" 200 967 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:16:20.973Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:16:20 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:16:20.975Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:16:20 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:16:20.976Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:16:43 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:16:43.581Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-12T11:22:39.818Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-12T11:22:39.823Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:18 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:18.794Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:25 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:25.569Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:28 +0000] \"GET /checkout/time-slots HTTP/1.1\" 200 967 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:28.572Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:28 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:28.574Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:28 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:28.576Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:36 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:36.696Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:45 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:45.311Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:47 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:47.240Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:28:47 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:28:47.946Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:30:56 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:30:56.729Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:32:36 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:32:36.311Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:32:37 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:32:37.828Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:32:37 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:32:37.872Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:32:37 +0000] \"GET /checkout/time-slots HTTP/1.1\" 200 967 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:32:37.899Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:11:32:46 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 175 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:32:46.195Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:11:37:01 +0000] \"POST / HTTP/1.1\" 404 43 \"-\" \"Razorpay-Webhook/v1\"","service":"veggiefresh-api","timestamp":"2025-10-12T11:37:01.863Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:20 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:20.250Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:31 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:31.070Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:35.672Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:35.730Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:35 +0000] \"GET /orders HTTP/1.1\" 200 8165 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:35.731Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:36 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:36.977Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:37 +0000] \"GET /cart HTTP/1.1\" 200 750 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:37.787Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:41 +0000] \"DELETE /cart/items/68cb58d467222d3046f07e45 HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:41.163Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:41 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:41.218Z"}
+{"level":"info","message":"::ffff:192.168.0.3 - - [12/Oct/2025:12:09:42 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:09:42.848Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:18:52 +0000] \"GET / HTTP/1.1\" 404 43 \"-\" \"-\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:18:52.233Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:19:22 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:22.293Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:19:53 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:53.254Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:54.484Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:54.524Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:19:54 +0000] \"GET /orders HTTP/1.1\" 200 8165 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:54.526Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:19:56 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:19:56.478Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:04 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:04.950Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:07 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:07.611Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:08.186Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:08.198Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:08 +0000] \"GET /orders HTTP/1.1\" 200 8165 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:08.200Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:14 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:14.427Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:15 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:15.367Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:12:20:16 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T12:20:16.307Z"}
+{"level":"info","message":"OTP sent to 8779635639, Message SID: SMbfb2fd33904d6c2a5013110dc88f0099","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:05.470Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:05 +0000] \"POST /auth/send-otp HTTP/1.1\" 200 50 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:05.473Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:22 +0000] \"POST /auth/verify-otp HTTP/1.1\" 200 572 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:22.032Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:22 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:22.335Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:39 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:39.312Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:40.158Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:40.188Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:40 +0000] \"GET /orders HTTP/1.1\" 200 8165 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:40.189Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:41 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:41.225Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:42 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:42.323Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:43 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:43.493Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:47 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:47.844Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:51.016Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:51.024Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:51 +0000] \"GET /orders HTTP/1.1\" 200 8165 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:51.025Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:37:58 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:37:58.605Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:07 +0000] \"GET /products?category=68cb58d467222d3046f07e3a HTTP/1.1\" 200 2588 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:07.833Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:09 +0000] \"GET /products/68cb58d467222d3046f07e4a HTTP/1.1\" 200 618 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:09.763Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:14 +0000] \"POST /cart/items HTTP/1.1\" 200 424 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:14.559Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:17 +0000] \"GET /products/68cb58d467222d3046f07e4d HTTP/1.1\" 200 629 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:17.928Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:20 +0000] \"POST /cart/items HTTP/1.1\" 200 645 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:20.109Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:22 +0000] \"GET /cart HTTP/1.1\" 200 1275 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:22.418Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:29 +0000] \"PATCH /cart/items/68cb58d467222d3046f07e4d HTTP/1.1\" 200 654 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:29.225Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:29 +0000] \"GET /cart HTTP/1.1\" 200 1284 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:29.256Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:30 +0000] \"PATCH /cart/items/68cb58d467222d3046f07e4d HTTP/1.1\" 200 651 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:30.166Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:30 +0000] \"GET /cart HTTP/1.1\" 200 1281 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:30.208Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:37 +0000] \"GET /cart HTTP/1.1\" 200 1281 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:37.222Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:37 +0000] \"GET /checkout/time-slots HTTP/1.1\" 200 967 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:37.236Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:38:37 +0000] \"GET /profile/addresses HTTP/1.1\" 200 217 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:38:37.239Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:41:27 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 176 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:41:27.510Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:42:12 +0000] \"POST /checkout/create-order HTTP/1.1\" 200 180 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:42:12.605Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:42:12.781Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:42:12.790Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:42:12 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:42:12.791Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:43:02 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:02.928Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:03.791Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:03.803Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:43:03 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:03.805Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:43:11 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:11.950Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:12.814Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:12.821Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:43:12 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:12.823Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:43:54 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:43:54.704Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:01.003Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:01.007Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:01 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:01.009Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:01 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:01.361Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:02 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:02.633Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:04 +0000] \"GET /products?category=68cb58d467222d3046f07e39 HTTP/1.1\" 200 1059 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:04.975Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:39 +0000] \"GET /products?q=app&limit=50 HTTP/1.1\" 200 562 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:39.636Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:42 +0000] \"GET /products?q=ban&limit=50 HTTP/1.1\" 200 571 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:42.957Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:44:56 +0000] \"GET /products?category=68cb58d467222d3046f07e3a HTTP/1.1\" 200 2588 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:44:56.381Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:45:02 +0000] \"GET /products?q=oni&limit=50 HTTP/1.1\" 200 567 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:45:02.732Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:45:05 +0000] \"GET /products?q=fre&limit=50 HTTP/1.1\" 200 3461 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:45:05.889Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:47:05.553Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-12T15:47:05.559Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:15:47:05 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-12T15:47:05.561Z"}
+{"level":"info","message":"::1 - - [12/Oct/2025:16:26:02 +0000] \"POST / HTTP/1.1\" 404 43 \"-\" \"Razorpay-Webhook/v1\"","service":"veggiefresh-api","timestamp":"2025-10-12T16:26:02.726Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-19T02:45:03.035Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-19T02:45:03.037Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:19:52 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:19:52.170Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:23 +0000] \"GET /profile HTTP/1.1\" 403 41 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:23.183Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:24 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:24.992Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:25 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:25.624Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:25 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:25.915Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:26 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:26.166Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:26 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:26.341Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [19/Oct/2025:06:21:26 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-19T06:21:26.505Z"}
+{"level":"info","message":"Connected to MongoDB","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:00.330Z"}
+{"level":"info","message":"Server running on port 3000","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:00.332Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:03 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:03.895Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:05 +0000] \"GET /profile HTTP/1.1\" 401 49 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:05.945Z"}
+{"level":"info","message":"OTP sent to 8779635639, Message SID: SMd35475e2ecec9a165c1c6a989cc57d6e","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:36.088Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:36 +0000] \"POST /auth/send-otp HTTP/1.1\" 200 50 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:36.089Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:56 +0000] \"POST /auth/verify-otp HTTP/1.1\" 200 572 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:56.300Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:56 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:56.423Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:55:59 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:55:59.219Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:56:00 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:00.719Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:01.393Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:01.437Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:56:01 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:01.440Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:56:02 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:02.191Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:56:51 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:56:51.990Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:44 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:44.871Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:45.927Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:45.956Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:45 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:45.957Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:46 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:46.687Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:47 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:47.473Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:48 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:48.261Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:49 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:49.118Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:50.404Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:50.413Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:50 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:50.414Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:51 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:51.272Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:52.466Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:52.473Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:52 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:52.474Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:52 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:52.866Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:53 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:53.551Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:55 +0000] \"GET /products?category=68cb58d467222d3046f07e39 HTTP/1.1\" 200 1059 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:55.270Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:58:57 +0000] \"GET /products/68cb58d467222d3046f07e53 HTTP/1.1\" 200 613 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:58:57.798Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:04 +0000] \"GET /products/68cb58d467222d3046f07e42 HTTP/1.1\" 200 622 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:04.114Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:09 +0000] \"GET /products?category=68cb58d467222d3046f07e3d HTTP/1.1\" 200 75 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:09.484Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:11 +0000] \"GET /products?category=68cb58d467222d3046f07e3b HTTP/1.1\" 200 459 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:11.907Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:15 +0000] \"GET /products?category=68cb58d467222d3046f07e3a HTTP/1.1\" 200 2588 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:15.780Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:25 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:25.554Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:02:59:34 +0000] \"GET /products?q=app&limit=50 HTTP/1.1\" 200 562 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T02:59:34.831Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:03:00:29 +0000] \"GET /cart HTTP/1.1\" 200 205 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:29.358Z"}
+{"level":"info","message":"Fetching orders for user: 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:29.945Z"}
+{"level":"info","message":"Found 10 orders for user 68ce9971f430fc5358f21589","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:29.961Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:03:00:29 +0000] \"GET /orders HTTP/1.1\" 200 8594 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:29.962Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:03:00:31 +0000] \"GET /profile HTTP/1.1\" 200 529 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:31.024Z"}
+{"level":"info","message":"::ffff:10.174.64.236 - - [21/Oct/2025:03:00:35 +0000] \"GET /categories HTTP/1.1\" 200 684 \"-\" \"Dart/3.9 (dart:io)\"","service":"veggiefresh-api","timestamp":"2025-10-21T03:00:35.432Z"}
