@@ -12,14 +12,41 @@ class CartScreen extends ConsumerStatefulWidget {
   ConsumerState<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends ConsumerState<CartScreen> {
+class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObserver {
   Cart? _cart;
   bool _isLoading = true;
+  bool _hasLoadedOnce = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadCart();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Reload cart when app resumes
+    if (state == AppLifecycleState.resumed && mounted) {
+      _loadCart();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload cart data when first load is complete and dependencies change
+    // This helps catch route changes in ShellRoute
+    if (_hasLoadedOnce && mounted) {
+      _loadCart();
+    }
   }
 
   Future<void> _loadCart() async {
@@ -35,6 +62,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           
           setState(() {
             _cart = Cart.fromJson(cartData);
+            _hasLoadedOnce = true;
           });
           
           // Debug log each item's productId
@@ -50,6 +78,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               items: [],
               subtotal: 0.0,
             );
+            _hasLoadedOnce = true;
           });
         }
       }
@@ -64,7 +93,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         );
       }
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _hasLoadedOnce = true;
+      });
     }
   }
 
@@ -187,7 +219,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        context.pop();
+        // Check if we can pop (if there's navigation history)
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          // If no history, go to home
+          context.go('/home');
+        }
         return false;
       },
       child: Scaffold(
@@ -195,7 +233,15 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           title: const Text('Shopping Cart'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              // Check if we can pop (if there's navigation history)
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                // If no history, go to home
+                context.go('/home');
+              }
+            },
           ),
           actions: [
             if (_cart != null && _cart!.items.isNotEmpty)
@@ -257,7 +303,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => context.push('/home'),
+            onPressed: () => context.go('/home'),
             child: const Text('Start Shopping'),
           ),
         ],

@@ -172,10 +172,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     // Slider section
                     Container(
                       height: 180,
-                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      margin: const EdgeInsets.only(left: 16, right: 20, top: 16, bottom: 8),
                       child: PageView.builder(
                         itemCount: 3,
-                        controller: PageController(viewportFraction: 0.9),
+                        controller: PageController(viewportFraction: 0.92),
                         itemBuilder: (context, index) {
                           return _buildSliderCard(index);
                         },
@@ -184,7 +184,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     
                     // Content section
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -195,15 +195,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 6),
                           GridView.builder(
+                            padding: EdgeInsets.zero,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
-                              childAspectRatio: 0.9,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.85,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
                             ),
                             itemCount: _categories.length,
                             itemBuilder: (context, index) {
@@ -518,7 +519,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final data = sliderData[index];
     
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.only(left: 4, right: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
