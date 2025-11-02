@@ -155,7 +155,28 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  static int _selectedIndex = 0;
+  int _selectedIndex = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateSelectedIndex();
+  }
+
+  void _updateSelectedIndex() {
+    final location = GoRouterState.of(context).uri.path;
+    setState(() {
+      if (location.startsWith('/home')) {
+        _selectedIndex = 0;
+      } else if (location.startsWith('/cart')) {
+        _selectedIndex = 1;
+      } else if (location.startsWith('/orders')) {
+        _selectedIndex = 2;
+      } else if (location.startsWith('/profile')) {
+        _selectedIndex = 3;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,10 +206,6 @@ class _MainShellState extends State<MainShell> {
         ],
       ),
     );
-  }
-
-  static void updateSelectedIndex(int index) {
-    _selectedIndex = index;
   }
 
   void _onTap(BuildContext context, int index) {
