@@ -20,6 +20,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   bool _isLoading = true;
   int _selectedUnitIndex = 0;
   double _quantity = 1.0;
+  
+  // Check if product has tiered weight pricing
+  bool get _hasTieredWeightPricing {
+    if (_product == null) return false;
+    final weightTiers = _product!.unitPrices.where((up) => up.unit == 'g' || up.unit == 'kg').toList();
+    return weightTiers.length > 1;
+  }
+  
+  // Get the step increment (in grams for weight products)
+  double get _stepIncrement {
+    if (!_hasTieredWeightPricing || _product == null) {
+      return _product?.unitPrices[_selectedUnitIndex].step ?? 1.0;
+    }
+    return 250.0; // 250gm for weight-based products
+  }
 
   @override
   void initState() {
@@ -35,7 +50,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           _product = Product.fromJson(response.data['data']);
           if (_product!.unitPrices.isNotEmpty) {
             _selectedUnitIndex = 0; // Always select first unit
-            _quantity = _product!.unitPrices[_selectedUnitIndex].step;
+            // For tiered weight products, start with 250gm
+            final weightTiers = _product!.unitPrices.where((up) => up.unit == 'g' || up.unit == 'kg').toList();
+            if (weightTiers.length > 1) {
+              _quantity = 250.0; // Start with 250gm
+            } else {
+              _quantity = _product!.unitPrices[_selectedUnitIndex].step;
+            }
           }
         });
       }
@@ -57,11 +78,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     if (_product == null || !mounted) return;
 
     try {
-      final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
+      // For tiered weight products, always use 'g' unit
+      String unit;
+      double qty;
+      
+      if (_hasTieredWeightPricing) {
+        unit = 'g';
+        qty = _quantity; // Already in grams
+      } else {
+        final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
+        unit = selectedUnit.unit;
+        qty = _quantity;
+      }
+      
       final response = await DioClient().dio.post('/cart/items', data: {
         'productId': _product!.id,
-        'unit': selectedUnit.unit,
-        'qty': _quantity,
+        'unit': unit,
+        'qty': qty,
       });
 
       if (!mounted) return;
@@ -69,6 +102,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       if (response.statusCode == 200) {
         // Clear any existing snackbars
         ScaffoldMessenger.of(context).clearSnackBars();
+        
+        // Format quantity display for snackbar
+        String qtyDisplay;
+        if (_hasTieredWeightPricing) {
+          if (_quantity >= 1000) {
+            qtyDisplay = '${(_quantity / 1000).toStringAsFixed(2)} kg';
+          } else {
+            qtyDisplay = '${_quantity.toInt()} gm';
+          }
+        } else {
+          qtyDisplay = '${_quantity} $unit';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -77,7 +123,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Added ${_quantity} ${selectedUnit.unit} to cart!',
+                    'Added $qtyDisplay to cart!',
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),
@@ -275,8 +321,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   Widget _buildQuantitySelector() {
-    final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -292,7 +336,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             IconButton(
               onPressed: () {
                 setState(() {
-                  _quantity = (_quantity - selectedUnit.step).clamp(selectedUnit.step, 100.0);
+                  if (_hasTieredWeightPricing) {
+                    _quantity = (_quantity - _stepIncrement).clamp(_stepIncrement, 100000.0);
+                  } else {
+                    final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
+                    _quantity = (_quantity - selectedUnit.step).clamp(selectedUnit.step, 100.0);
+                  }
                 });
               },
               icon: const Icon(Icons.remove),
@@ -311,7 +360,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             IconButton(
               onPressed: () {
                 setState(() {
-                  _quantity += selectedUnit.step;
+                  if (_hasTieredWeightPricing) {
+                    _quantity += _stepIncrement;
+                  } else {
+                    final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
+                    _quantity += selectedUnit.step;
+                  }
                 });
               },
               icon: const Icon(Icons.add),
@@ -324,6 +378,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   double _calculatePrice() {
     if (_product == null || _product!.unitPrices.isEmpty) return 0.0;
+    
+    // Use tiered pricing for weight products
+    if (_hasTieredWeightPricing) {
+      return UnitPrice.calculateTieredPrice(_quantity, _product!.unitPrices);
+    }
+    
+    // Regular pricing for non-tiered products
     final selectedUnit = _product!.unitPrices[_selectedUnitIndex];
     return selectedUnit.calculatePrice(_quantity);
   }
@@ -353,7 +414,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   String _getQuantityDisplayText() {
-    if (_quantity < 1.0 && (_product!.unitPrices[_selectedUnitIndex].unit.toLowerCase().contains('kg'))) {
+    if (_hasTieredWeightPricing) {
+      // For tiered weight products, always show in gm or kg
+      if (_quantity >= 1000) {
+        return '${(_quantity / 1000).toStringAsFixed(2)} kg';
+      } else {
+        return '${_quantity.toInt()} gm';
+      }
+    } else if (_quantity < 1.0 && (_product!.unitPrices[_selectedUnitIndex].unit.toLowerCase().contains('kg'))) {
       // Convert kg to grams for display when quantity is less than 1 kg
       final grams = (_quantity * 1000).toInt();
       return '${grams} gm';

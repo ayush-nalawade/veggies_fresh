@@ -100,6 +100,32 @@ class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObse
     }
   }
 
+  // Determine if a cart item is weight-based with tiered pricing
+  bool _isWeightBasedItem(CartItem item) {
+    return item.unit == 'g' || item.unit == 'kg';
+  }
+  
+  // Get appropriate step increment for item
+  double _getStepForItem(CartItem item) {
+    if (_isWeightBasedItem(item)) {
+      // For weight-based items, use 250gm increment
+      return 250.0;
+    }
+    return 1.0; // Default for other items
+  }
+  
+  // Format quantity display based on unit type
+  String _formatQuantityDisplay(CartItem item) {
+    if (_isWeightBasedItem(item)) {
+      if (item.qty >= 1000) {
+        return '${(item.qty / 1000).toStringAsFixed(2)} kg';
+      } else {
+        return '${item.qty.toInt()} gm';
+      }
+    }
+    return item.qty.toStringAsFixed(item.qty % 1 == 0 ? 0 : 2);
+  }
+
   Future<void> _updateQuantity(String productId, double newQuantity) async {
     try {
       print('Updating quantity for productId: $productId, newQuantity: $newQuantity'); // Debug log
@@ -353,7 +379,7 @@ class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObse
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${item.qty.toStringAsFixed(item.qty % 1 == 0 ? 0 : 2)} ${item.unit}',
+                    '${_formatQuantityDisplay(item)} ${_isWeightBasedItem(item) ? '' : item.unit}',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -379,7 +405,10 @@ class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObse
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: () => _updateQuantity(item.productId, item.qty - 0.25),
+                      onPressed: () {
+                        final step = _getStepForItem(item);
+                        _updateQuantity(item.productId, item.qty - step);
+                      },
                       icon: const Icon(Icons.remove),
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),
@@ -390,12 +419,15 @@ class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObse
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        item.qty.toStringAsFixed(item.qty % 1 == 0 ? 0 : 2),
+                        _formatQuantityDisplay(item),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     IconButton(
-                      onPressed: () => _updateQuantity(item.productId, item.qty + 0.25),
+                      onPressed: () {
+                        final step = _getStepForItem(item);
+                        _updateQuantity(item.productId, item.qty + step);
+                      },
                       icon: const Icon(Icons.add),
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                     ),

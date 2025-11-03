@@ -40,6 +40,39 @@ class UnitPrice {
   double calculatePrice(double quantity) {
     return double.parse(((quantity / baseQty) * price).toStringAsFixed(2));
   }
+  
+  // Calculate tiered price across all weight tiers
+  static double calculateTieredPrice(double quantity, List<UnitPrice> unitPrices) {
+    // Filter weight-based unit prices and sort by baseQty descending
+    final weightPrices = unitPrices
+        .where((up) => up.unit == 'g' || up.unit == 'kg')
+        .map((up) => {
+              'baseQty': up.unit == 'kg' ? up.baseQty * 1000 : up.baseQty,
+              'price': up.price,
+            })
+        .toList()
+      ..sort((a, b) => (b['baseQty'] as double).compareTo(a['baseQty'] as double));
+
+    if (weightPrices.isEmpty) {
+      throw Exception('No weight-based pricing found');
+    }
+
+    double remainingQty = quantity;
+    double totalPrice = 0;
+
+    // Calculate price using largest denominations first
+    for (final tier in weightPrices) {
+      final baseQty = tier['baseQty'] as double;
+      final price = tier['price'] as double;
+      final count = (remainingQty / baseQty).floor();
+      if (count > 0) {
+        totalPrice += count * price;
+        remainingQty -= count * baseQty;
+      }
+    }
+
+    return double.parse(totalPrice.toStringAsFixed(2));
+  }
 }
 
 class Category {
