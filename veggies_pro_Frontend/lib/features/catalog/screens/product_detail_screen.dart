@@ -240,37 +240,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               const SizedBox(height: 16),
                             ],
                             
-                            // Unit Display (Single Unit)
-                            Text(
-                              'Unit',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey[300]!),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _getUnitIcon(),
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _getUnitText(),
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
+                            // Pricing Tiers Display (for tiered weight products)
+                            if (_hasTieredWeightPricing) ...[
+                              _buildPricingTiersDisplay(),
+                              const SizedBox(height: 16),
+                            ],
                             
                             // Quantity Selector
                             _buildQuantitySelector(),
@@ -429,5 +403,122 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       // Show normal display for other cases
       return '${_quantity.toStringAsFixed(_quantity % 1 == 0 ? 0 : 2)} ${_product!.unitPrices[_selectedUnitIndex].unit}';
     }
+  }
+
+  Widget _buildPricingTiersDisplay() {
+    // Get weight tiers
+    final weightTiers = _product!.unitPrices
+        .where((up) => up.unit == 'g' || up.unit == 'kg')
+        .toList();
+
+    if (weightTiers.isEmpty) return const SizedBox.shrink();
+
+    // Find 250gm and 1kg tiers
+    final tier250 = weightTiers.firstWhere(
+      (t) => t.baseQty == 250, 
+      orElse: () => weightTiers.first
+    );
+    final tier1kg = weightTiers.firstWhere(
+      (t) => t.baseQty == 1000, 
+      orElse: () => weightTiers.last
+    );
+    
+    // Calculate what 1kg would cost at 250gm pricing (4 × 250gm price)
+    final regularPrice1kg = tier250.price * 4;
+    final actualPrice1kg = tier1kg.price;
+    final savings = regularPrice1kg - actualPrice1kg;
+    final savingsPercent = ((savings / regularPrice1kg) * 100).round();
+
+    // Only show if there's actual savings
+    if (savings <= 0) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.green.shade50,
+            Colors.green.shade100.withOpacity(0.3),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green.shade200),
+      ),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.green.shade700,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.local_offer,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          
+          // Text content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Best Price on 1 kg',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green.shade900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      '₹${regularPrice1kg.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        decoration: TextDecoration.lineThrough,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '₹${actualPrice1kg.toStringAsFixed(0)}',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade700,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade700,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Save $savingsPercent%',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
