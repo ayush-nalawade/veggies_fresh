@@ -162,6 +162,7 @@ class OrdersScreen extends ConsumerStatefulWidget {
 class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   List<Order> _orders = [];
   bool _isLoading = true;
+  Set<String> _expandedOrders = {}; // Track which orders are expanded
 
   @override
   void initState() {
@@ -378,13 +379,15 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             const SizedBox(height: 12),
             
             // Order items
-            ...order.items.take(2).map((item) => Padding(
+            ...(_expandedOrders.contains(order.id) 
+                ? order.items 
+                : order.items.take(2)).map((item) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      '${item.name} (${item.qty.toStringAsFixed(item.qty % 1 == 0 ? 0 : 2)} ${item.unit})',
+                      '${item.name} (${_formatQuantity(item.qty, item.unit)})',
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
@@ -400,14 +403,44 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             )),
             
             if (order.items.length > 2) ...[
-              Text(
-                '+${order.items.length - 2} more items',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
+              const SizedBox(height: 4),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    if (_expandedOrders.contains(order.id)) {
+                      _expandedOrders.remove(order.id);
+                    } else {
+                      _expandedOrders.add(order.id);
+                    }
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Text(
+                        _expandedOrders.contains(order.id)
+                            ? 'Show less'
+                            : '+${order.items.length - 2} more items',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        _expandedOrders.contains(order.id)
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
             ],
             
             const Divider(),
@@ -500,5 +533,16 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String _formatQuantity(double qty, String unit) {
+    if (unit == 'g' || unit == 'kg') {
+      if (qty >= 1000) {
+        return '${(qty / 1000).toStringAsFixed(2)} kg';
+      } else {
+        return '${qty.toInt()} gm';
+      }
+    }
+    return '${qty.toStringAsFixed(qty % 1 == 0 ? 0 : 2)} $unit';
   }
 }
