@@ -105,5 +105,6 @@ class Cart {
     };
   }
 
-  int get itemCount => items.fold(0, (sum, item) => sum + item.qty.round());
+  // Returns the number of distinct items in the cart (not total quantity)
+  int get itemCount => items.length;
 }

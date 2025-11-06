@@ -6,6 +6,7 @@ export interface IAddress {
   name: string;
   line1: string;
   line2?: string;
+  area?: string; // Delivery area (e.g., "Kandivali (W)", "Malad (W)")
   city: string;
   state: string;
   pincode: string;
@@ -33,6 +34,7 @@ const addressSchema = new Schema<IAddress>({
   name: { type: String, required: true },
   line1: { type: String, required: true },
   line2: { type: String },
+  area: { type: String }, // Delivery area
   city: { type: String, required: true },
   state: { type: String, required: true },
   pincode: { type: String, required: true },

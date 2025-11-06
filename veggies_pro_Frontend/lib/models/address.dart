@@ -4,6 +4,7 @@ class Address {
   final String name;
   final String line1;
   final String? line2;
+  final String? area; // Delivery area
   final String city;
   final String state;
   final String pincode;
@@ -17,6 +18,7 @@ class Address {
     required this.name,
     required this.line1,
     this.line2,
+    this.area,
     required this.city,
     required this.state,
     required this.pincode,
@@ -32,6 +34,7 @@ class Address {
       name: json['name']?.toString() ?? '',
       line1: json['line1']?.toString() ?? '',
       line2: json['line2']?.toString(),
+      area: json['area']?.toString(),
       city: json['city']?.toString() ?? '',
       state: json['state']?.toString() ?? '',
       pincode: json['pincode']?.toString() ?? '',
@@ -48,6 +51,7 @@ class Address {
       'name': name,
       'line1': line1,
       if (line2 != null) 'line2': line2,
+      if (area != null) 'area': area,
       'city': city,
       'state': state,
       'pincode': pincode,
@@ -63,6 +67,7 @@ class Address {
     String? name,
     String? line1,
     String? line2,
+    String? area,
     String? city,
     String? state,
     String? pincode,
@@ -76,6 +81,7 @@ class Address {
       name: name ?? this.name,
       line1: line1 ?? this.line1,
       line2: line2 ?? this.line2,
+      area: area ?? this.area,
       city: city ?? this.city,
       state: state ?? this.state,
       pincode: pincode ?? this.pincode,
@@ -90,11 +96,17 @@ class Address {
     if (line2 != null && line2!.isNotEmpty) {
       parts.add(line2!);
     }
+    if (area != null && area!.isNotEmpty) {
+      parts.add(area!);
+    }
     parts.addAll([city, state, pincode, country]);
     return parts.join(', ');
   }
 
   String get shortAddress {
+    if (area != null && area!.isNotEmpty) {
+      return '$area, $city';
+    }
     return '$city, $state';
   }
 }

@@ -25,8 +25,15 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   final _countryController = TextEditingController();
   
   String _selectedType = 'home';
+  String? _selectedArea; // Area dropdown
   bool _isDefault = false;
   bool _isLoading = false;
+  
+  // Area to pincode mapping
+  final Map<String, String> _areaToPincode = {
+    'Kandivali (W)': '400067',
+    'Malad (W)': '400064',
+  };
 
   @override
   void initState() {
@@ -43,6 +50,13 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
       _pincodeController.text = widget.address!.pincode;
       _selectedType = widget.address!.type;
       _isDefault = widget.address!.isDefault;
+      
+      // Try to match pincode to area
+      _areaToPincode.forEach((area, pincode) {
+        if (pincode == widget.address!.pincode) {
+          _selectedArea = area;
+        }
+      });
     }
   }
 
@@ -60,6 +74,17 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
   Future<void> _saveAddress() async {
     if (!_formKey.currentState!.validate()) return;
+    
+    // Check if area is selected
+    if (_selectedArea == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a delivery area'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -70,6 +95,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
         name: _nameController.text.trim(),
         line1: _line1Controller.text.trim(),
         line2: _line2Controller.text.trim().isEmpty ? null : _line2Controller.text.trim(),
+        area: _selectedArea, // Save the selected area
         city: _cityController.text.trim(),
         state: _stateController.text.trim(),
         pincode: _pincodeController.text.trim(),
@@ -242,23 +268,23 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Pre-filled Location Info
+            // Delivery Area Info
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: Colors.green[50],
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue[200]!),
+                border: Border.all(color: Colors.green[200]!),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                  Icon(Icons.delivery_dining, color: Colors.green[700], size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'We are currently delivering in Mumbai only',
+                      'We deliver to Kandivali (W) and Malad (W) areas',
                       style: TextStyle(
-                        color: Colors.blue[700],
+                        color: Colors.green[700],
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -266,6 +292,48 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Area Dropdown
+            DropdownButtonFormField<String>(
+              value: _selectedArea,
+              decoration: InputDecoration(
+                labelText: 'Delivery Area *',
+                prefixIcon: const Icon(Icons.location_on),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              ),
+              items: _areaToPincode.keys.map((String area) {
+                return DropdownMenuItem<String>(
+                  value: area,
+                  child: Text(area),
+                );
+              }).toList(),
+              onChanged: (String? newArea) {
+                setState(() {
+                  _selectedArea = newArea;
+                  if (newArea != null) {
+                    _pincodeController.text = _areaToPincode[newArea]!;
+                  }
+                });
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a delivery area';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
 
@@ -333,32 +401,47 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Pincode
+            // Pincode (Auto-filled and read-only)
             TextFormField(
               controller: _pincodeController,
+              enabled: false,
               decoration: InputDecoration(
                 labelText: 'Pincode *',
-                prefixIcon: const Icon(Icons.pin_drop),
+                prefixIcon: const Icon(Icons.pin_drop, color: Colors.grey),
+                suffixIcon: _selectedArea != null
+                    ? Icon(Icons.check_circle, color: Colors.green[600], size: 20)
+                    : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: Colors.grey, width: 1),
                 ),
-                focusedBorder: OutlineInputBorder(
+                disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                  borderSide: BorderSide(
+                    color: _selectedArea != null ? Colors.green[200]! : Colors.grey,
+                    width: 1,
+                  ),
                 ),
+                filled: true,
+                fillColor: _selectedArea != null ? Colors.green[50] : Colors.grey[100],
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                hintText: 'Select area to auto-fill',
+                hintStyle: const TextStyle(color: Colors.grey),
+                labelStyle: TextStyle(
+                  color: _selectedArea != null ? Colors.green[700] : Colors.grey,
+                ),
               ),
-              keyboardType: TextInputType.number,
+              style: TextStyle(
+                color: _selectedArea != null ? Colors.green[900] : Colors.grey,
+                fontWeight: FontWeight.w600,
+              ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Pincode is required';
-                }
-                if (value.trim().length < 6) {
-                  return 'Pincode must be at least 6 digits';
+                  return 'Please select a delivery area';
                 }
                 return null;
               },

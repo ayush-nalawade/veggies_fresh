@@ -16,6 +16,7 @@ const addressSchema = z.object({
   name: z.string().min(2, 'Address name is required'),
   line1: z.string().min(5, 'Address line 1 is required'),
   line2: z.string().optional(),
+  area: z.string().optional(), // Delivery area (Kandivali W, Malad W)
   city: z.string().min(2, 'City is required'),
   state: z.string().min(2, 'State is required'),
   pincode: z.string().min(6, 'Pincode must be at least 6 digits'),
@@ -202,17 +203,18 @@ export const updateAddress = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    // Update the address with new data
+    user.addresses[addressIndex] = {
+      ...user.addresses[addressIndex],
+      ...addressData
+    };
+
     // If this is set as default, unset other default addresses
     if (addressData.isDefault) {
       user.addresses = user.addresses.map((addr, index) => ({
         ...addr,
         isDefault: index === addressIndex ? true : false
       }));
-    } else {
-      user.addresses[addressIndex] = {
-        ...user.addresses[addressIndex],
-        ...addressData
-      };
     }
 
     await user.save();

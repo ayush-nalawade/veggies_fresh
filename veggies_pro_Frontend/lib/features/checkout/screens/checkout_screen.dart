@@ -70,6 +70,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   bool _isProcessingPayment = false;
   final PaymentService _paymentService = PaymentService();
   Map<String, bool> _expandedTimeSlots = {}; // Track which time slots are expanded
+  String? _userPhone; // User's phone number from profile
 
   @override
   void initState() {
@@ -91,6 +92,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         _loadCart(),
         _loadAddresses(),
         _loadTimeSlots(),
+        _loadUserProfile(),
       ]);
       _calculateDeliveryFee();
     } catch (e) {
@@ -104,6 +106,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       }
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final user = await ProfileService().getProfile();
+      setState(() {
+        _userPhone = user.phone;
+      });
+    } catch (e) {
+      // If profile load fails, continue without phone - will use fallback
+      print('Failed to load user profile: $e');
     }
   }
 
@@ -171,15 +185,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     try {
       // Create order with selected address and time slot
+      // Use user's phone number from profile, fallback to address phone if available
+      final phoneNumber = _userPhone ?? 
+                         (_selectedAddress!.phone.isNotEmpty ? _selectedAddress!.phone : null) ??
+                         '1234567890';
+      
       final orderResponse = await DioClient().dio.post('/checkout/create-order', data: {
         'address': {
           'line1': _selectedAddress!.line1,
           'line2': _selectedAddress!.line2?.isNotEmpty == true ? _selectedAddress!.line2 : '',
+          'area': _selectedAddress!.area, // Include area field
           'city': _selectedAddress!.city,
           'state': _selectedAddress!.state,
           'pincode': _selectedAddress!.pincode,
           'country': _selectedAddress!.country,
-          'phone': _selectedAddress!.phone.isNotEmpty ? _selectedAddress!.phone : '1234567890',
+          'phone': phoneNumber, // Use user's phone from profile
         },
         'paymentMethod': _paymentMethod,
         'timeSlot': {
