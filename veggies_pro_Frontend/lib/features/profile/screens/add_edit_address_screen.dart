@@ -16,9 +16,9 @@ class AddEditAddressScreen extends ConsumerStatefulWidget {
 
 class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _line1Controller = TextEditingController();
   final _line2Controller = TextEditingController();
+  final _landmarkController = TextEditingController();
   final _cityController = TextEditingController();
   final _stateController = TextEditingController();
   final _pincodeController = TextEditingController();
@@ -44,9 +44,9 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     _countryController.text = 'India';
     
     if (widget.address != null) {
-      _nameController.text = widget.address!.name;
       _line1Controller.text = widget.address!.line1;
       _line2Controller.text = widget.address!.line2 ?? '';
+      _landmarkController.text = widget.address!.landmark ?? '';
       _pincodeController.text = widget.address!.pincode;
       _selectedType = widget.address!.type;
       _isDefault = widget.address!.isDefault;
@@ -62,9 +62,9 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _line1Controller.dispose();
     _line2Controller.dispose();
+    _landmarkController.dispose();
     _cityController.dispose();
     _stateController.dispose();
     _pincodeController.dispose();
@@ -92,9 +92,9 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
       final address = Address(
         id: widget.address?.id,
         type: _selectedType,
-        name: _nameController.text.trim(),
         line1: _line1Controller.text.trim(),
         line2: _line2Controller.text.trim().isEmpty ? null : _line2Controller.text.trim(),
+        landmark: _landmarkController.text.trim().isEmpty ? null : _landmarkController.text.trim(),
         area: _selectedArea, // Save the selected area
         city: _cityController.text.trim(),
         state: _stateController.text.trim(),
@@ -184,43 +184,12 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Address Name
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Address Name (e.g., My Home)',
-                prefixIcon: const Icon(Icons.label),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.grey, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Address name is required';
-                }
-                if (value.trim().length < 2) {
-                  return 'Address name must be at least 2 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Address Line 1
+            // Flat no/ Building name
             TextFormField(
               controller: _line1Controller,
               decoration: InputDecoration(
-                labelText: 'Address Line 1 *',
-                prefixIcon: const Icon(Icons.location_on),
+                labelText: 'Flat no/ Building name *',
+                prefixIcon: const Icon(Icons.home),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -236,21 +205,21 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Address line 1 is required';
+                  return 'Flat no/ Building name is required';
                 }
-                if (value.trim().length < 5) {
-                  return 'Address line 1 must be at least 5 characters';
+                if (value.trim().length < 3) {
+                  return 'Please enter a valid flat no or building name';
                 }
                 return null;
               },
             ),
             const SizedBox(height: 16),
 
-            // Address Line 2
+            // Sector/ Locality
             TextFormField(
               controller: _line2Controller,
               decoration: InputDecoration(
-                labelText: 'Address Line 2 (Optional)',
+                labelText: 'Sector/ Locality (Optional)',
                 prefixIcon: const Icon(Icons.location_city),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -264,6 +233,29 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
                   borderSide: const BorderSide(color: Colors.blue, width: 2),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Landmark
+            TextFormField(
+              controller: _landmarkController,
+              decoration: InputDecoration(
+                labelText: 'Landmark (Optional)',
+                prefixIcon: const Icon(Icons.place),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                hintText: '',
               ),
             ),
             const SizedBox(height: 16),

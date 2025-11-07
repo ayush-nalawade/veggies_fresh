@@ -3,9 +3,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IAddress {
   _id?: mongoose.Types.ObjectId;
   type: 'home' | 'work' | 'other';
-  name: string;
-  line1: string;
-  line2?: string;
+  line1: string; // Flat no/ Building name
+  line2?: string; // Sector/ Locality
+  landmark?: string; // Landmark (optional)
   area?: string; // Delivery area (e.g., "Kandivali (W)", "Malad (W)")
   city: string;
   state: string;
@@ -31,9 +31,9 @@ export interface IUser extends Document {
 
 const addressSchema = new Schema<IAddress>({
   type: { type: String, enum: ['home', 'work', 'other'], required: true, default: 'home' },
-  name: { type: String, required: true },
-  line1: { type: String, required: true },
-  line2: { type: String },
+  line1: { type: String, required: true }, // Flat no/ Building name
+  line2: { type: String }, // Sector/ Locality
+  landmark: { type: String }, // Landmark (optional)
   area: { type: String }, // Delivery area
   city: { type: String, required: true },
   state: { type: String, required: true },

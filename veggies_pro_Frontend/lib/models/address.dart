@@ -1,9 +1,9 @@
 class Address {
   final String? id;
   final String type;
-  final String name;
-  final String line1;
-  final String? line2;
+  final String line1; // Flat no/ Building name
+  final String? line2; // Sector/ Locality
+  final String? landmark; // Landmark (optional)
   final String? area; // Delivery area
   final String city;
   final String state;
@@ -15,9 +15,9 @@ class Address {
   Address({
     this.id,
     required this.type,
-    required this.name,
     required this.line1,
     this.line2,
+    this.landmark,
     this.area,
     required this.city,
     required this.state,
@@ -31,9 +31,9 @@ class Address {
     return Address(
       id: json['_id']?.toString(),
       type: json['type']?.toString() ?? 'home',
-      name: json['name']?.toString() ?? '',
       line1: json['line1']?.toString() ?? '',
       line2: json['line2']?.toString(),
+      landmark: json['landmark']?.toString(),
       area: json['area']?.toString(),
       city: json['city']?.toString() ?? '',
       state: json['state']?.toString() ?? '',
@@ -48,9 +48,9 @@ class Address {
     return {
       if (id != null) '_id': id,
       'type': type,
-      'name': name,
       'line1': line1,
       if (line2 != null) 'line2': line2,
+      if (landmark != null) 'landmark': landmark,
       if (area != null) 'area': area,
       'city': city,
       'state': state,
@@ -64,9 +64,9 @@ class Address {
   Address copyWith({
     String? id,
     String? type,
-    String? name,
     String? line1,
     String? line2,
+    String? landmark,
     String? area,
     String? city,
     String? state,
@@ -78,9 +78,9 @@ class Address {
     return Address(
       id: id ?? this.id,
       type: type ?? this.type,
-      name: name ?? this.name,
       line1: line1 ?? this.line1,
       line2: line2 ?? this.line2,
+      landmark: landmark ?? this.landmark,
       area: area ?? this.area,
       city: city ?? this.city,
       state: state ?? this.state,
@@ -95,6 +95,9 @@ class Address {
     final parts = [line1];
     if (line2 != null && line2!.isNotEmpty) {
       parts.add(line2!);
+    }
+    if (landmark != null && landmark!.isNotEmpty) {
+      parts.add(landmark!);
     }
     if (area != null && area!.isNotEmpty) {
       parts.add(area!);

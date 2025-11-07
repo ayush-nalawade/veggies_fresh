@@ -194,6 +194,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         'address': {
           'line1': _selectedAddress!.line1,
           'line2': _selectedAddress!.line2?.isNotEmpty == true ? _selectedAddress!.line2 : '',
+          'landmark': _selectedAddress!.landmark?.isNotEmpty == true ? _selectedAddress!.landmark : '',
           'area': _selectedAddress!.area, // Include area field
           'city': _selectedAddress!.city,
           'state': _selectedAddress!.state,
@@ -524,11 +525,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          address.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        Flexible(
+                          child: Text(
+                            _getAddressDisplayName(address),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (address.isDefault) ...[
@@ -815,6 +819,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       default:
         return Icons.location_on;
     }
+  }
+
+  String _getAddressDisplayName(Address address) {
+    final typeName = address.type[0].toUpperCase() + address.type.substring(1);
+    if (address.area != null && address.area!.isNotEmpty) {
+      return '$typeName - ${address.area}';
+    }
+    return typeName;
   }
 
   Widget _buildOrderSummary() {

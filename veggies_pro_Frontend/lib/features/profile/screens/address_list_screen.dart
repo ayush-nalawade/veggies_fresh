@@ -48,7 +48,7 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Address'),
-        content: Text('Are you sure you want to delete "${address.name}"?'),
+        content: Text('Are you sure you want to delete this ${address.type} address?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -205,7 +205,7 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    address.name,
+                    _getAddressDisplayName(address),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -284,5 +284,13 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
       default:
         return Icons.location_on;
     }
+  }
+
+  String _getAddressDisplayName(Address address) {
+    final typeName = address.type[0].toUpperCase() + address.type.substring(1);
+    if (address.area != null && address.area!.isNotEmpty) {
+      return '$typeName - ${address.area}';
+    }
+    return typeName;
   }
 }

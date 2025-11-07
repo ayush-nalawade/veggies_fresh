@@ -9,8 +9,9 @@ import { logger } from '../utils/logger';
 
 // Validation schemas
 const addressSchema = z.object({
-  line1: z.string().min(1, 'Address line 1 is required'),
-  line2: z.string().optional().nullable(),
+  line1: z.string().min(1, 'Flat no/ Building name is required'),
+  line2: z.string().optional().nullable(), // Sector/ Locality
+  landmark: z.string().optional().nullable(), // Landmark
   area: z.string().optional(), // Delivery area (Kandivali W, Malad W)
   city: z.string().min(1, 'City is required'),
   state: z.string().min(1, 'State is required'),

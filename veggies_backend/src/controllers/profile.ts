@@ -13,9 +13,9 @@ const updateProfileSchema = z.object({
 
 const addressSchema = z.object({
   type: z.enum(['home', 'work', 'other']),
-  name: z.string().min(2, 'Address name is required'),
-  line1: z.string().min(5, 'Address line 1 is required'),
-  line2: z.string().optional(),
+  line1: z.string().min(3, 'Flat no/ Building name is required'),
+  line2: z.string().optional(), // Sector/ Locality
+  landmark: z.string().optional(), // Landmark
   area: z.string().optional(), // Delivery area (Kandivali W, Malad W)
   city: z.string().min(2, 'City is required'),
   state: z.string().min(2, 'State is required'),
