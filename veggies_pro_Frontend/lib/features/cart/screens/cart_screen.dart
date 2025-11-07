@@ -270,11 +270,12 @@ class _CartScreenState extends ConsumerState<CartScreen> with WidgetsBindingObse
             },
           ),
           actions: [
-            if (_cart != null && _cart!.items.isNotEmpty)
-              TextButton(
-                onPressed: () => _clearCart(),
-                child: const Text('Clear'),
-              ),
+            // Commented out Clear button - feature not needed for now
+            // if (_cart != null && _cart!.items.isNotEmpty)
+            //   TextButton(
+            //     onPressed: () => _clearCart(),
+            //     child: const Text('Clear'),
+            //   ),
           ],
         ),
       body: _isLoading

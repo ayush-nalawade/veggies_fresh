@@ -67,29 +67,43 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onPressed: () => context.pop(),
           ),
           actions: [
-            IconButton(
-              onPressed: _loadProfile,
-              icon: const Icon(Icons.refresh),
-            ),
+            // Commented out Refresh button - feature not needed for now
+            // IconButton(
+            //   onPressed: _loadProfile,
+            //   icon: const Icon(Icons.refresh),
+            // ),
           ],
         ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _user == null
               ? _buildErrorState()
-              : RefreshIndicator(
-                  onRefresh: _loadProfile,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        _buildProfileHeader(),
-                        const SizedBox(height: 32),
-                        _buildMenuItems(),
-                        const SizedBox(height: 32),
-                        _buildLogoutButton(),
-                      ],
-                    ),
+              // Commented out RefreshIndicator - feature not needed for now
+              // : RefreshIndicator(
+              //     onRefresh: _loadProfile,
+              //     child: SingleChildScrollView(
+              //       padding: const EdgeInsets.all(16),
+              //       child: Column(
+              //         children: [
+              //           _buildProfileHeader(),
+              //           const SizedBox(height: 32),
+              //           _buildMenuItems(),
+              //           const SizedBox(height: 32),
+              //           _buildLogoutButton(),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildProfileHeader(),
+                      const SizedBox(height: 32),
+                      _buildMenuItems(),
+                      const SizedBox(height: 32),
+                      _buildLogoutButton(),
+                    ],
                   ),
                 ),
       ),

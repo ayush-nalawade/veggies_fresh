@@ -270,26 +270,36 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             onPressed: () => context.pop(),
           ),
           actions: [
-            IconButton(
-              onPressed: _loadOrders,
-              icon: const Icon(Icons.refresh),
-            ),
+            // Commented out Refresh button - feature not needed for now
+            // IconButton(
+            //   onPressed: _loadOrders,
+            //   icon: const Icon(Icons.refresh),
+            // ),
           ],
         ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _orders.isEmpty
               ? _buildEmptyState()
-              : RefreshIndicator(
-                  onRefresh: _loadOrders,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _orders.length,
-                    itemBuilder: (context, index) {
-                      final order = _orders[index];
-                      return _buildOrderCard(order);
-                    },
-                  ),
+              // Commented out RefreshIndicator - feature not needed for now
+              // : RefreshIndicator(
+              //     onRefresh: _loadOrders,
+              //     child: ListView.builder(
+              //       padding: const EdgeInsets.all(16),
+              //       itemCount: _orders.length,
+              //       itemBuilder: (context, index) {
+              //         final order = _orders[index];
+              //         return _buildOrderCard(order);
+              //       },
+              //     ),
+              //   ),
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _orders.length,
+                  itemBuilder: (context, index) {
+                    final order = _orders[index];
+                    return _buildOrderCard(order);
+                  },
                 ),
       ),
     );
