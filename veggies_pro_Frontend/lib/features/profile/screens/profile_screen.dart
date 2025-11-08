@@ -54,12 +54,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        context.pop();
-        return false;
-      },
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Profile'),
           leading: IconButton(
@@ -106,7 +101,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ],
                   ),
                 ),
-      ),
     );
   }
 
@@ -233,13 +227,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           icon: Icons.help,
           title: 'Help & Support',
           subtitle: 'Get help and contact support',
-          onTap: () {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help & Support feature coming soon')),
-              );
-            }
-          },
+          onTap: () => context.push('/profile/help-support'),
+        ),
+        _buildMenuItem(
+          icon: Icons.help_outline,
+          title: 'FAQs',
+          subtitle: 'Frequently asked questions',
+          onTap: () => context.push('/profile/faqs'),
+        ),
+        _buildMenuItem(
+          icon: Icons.privacy_tip,
+          title: 'Privacy Policy',
+          subtitle: 'How we protect your data',
+          onTap: () => context.push('/profile/privacy-policy'),
+        ),
+        _buildMenuItem(
+          icon: Icons.gavel,
+          title: 'Terms & Conditions',
+          subtitle: 'Terms of service and usage',
+          onTap: () => context.push('/profile/terms-conditions'),
         ),
       ],
     );

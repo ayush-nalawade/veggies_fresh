@@ -17,6 +17,10 @@ import '../features/profile/screens/profile_screen.dart';
 import '../features/profile/screens/edit_profile_screen.dart';
 import '../features/profile/screens/address_list_screen.dart';
 import '../features/profile/screens/add_edit_address_screen.dart';
+import '../features/profile/screens/help_support_screen.dart';
+import '../features/profile/screens/faqs_screen.dart';
+import '../features/profile/screens/privacy_policy_screen.dart';
+import '../features/profile/screens/terms_conditions_screen.dart';
 import '../models/user.dart';
 import '../models/address.dart';
 
@@ -138,6 +142,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => AddEditAddressScreen(
               address: state.extra as Address,
             ),
+          ),
+          GoRoute(
+            path: '/profile/help-support',
+            builder: (context, state) => const HelpSupportScreen(),
+          ),
+          GoRoute(
+            path: '/profile/faqs',
+            builder: (context, state) => const FAQsScreen(),
+          ),
+          GoRoute(
+            path: '/profile/privacy-policy',
+            builder: (context, state) => const PrivacyPolicyScreen(),
+          ),
+          GoRoute(
+            path: '/profile/terms-conditions',
+            builder: (context, state) => const TermsConditionsScreen(),
           ),
         ],
       ),

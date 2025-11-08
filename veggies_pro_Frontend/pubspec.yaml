@@ -61,6 +61,9 @@ dependencies:
   # OTP and UI
   pin_code_fields: ^8.0.1
   fluttertoast: ^8.2.4
+  
+  # URL Launcher
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:
