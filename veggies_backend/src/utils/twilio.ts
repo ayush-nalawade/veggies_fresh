@@ -11,7 +11,7 @@ const client = twilio(
 export const sendOTP = async (phoneNumber: string, otp: string): Promise<boolean> => {
   try {
     const message = await client.messages.create({
-      body: `Your VeggieFresh verification code is: ${otp}. This code will expire in 5 minutes.`,
+      body: `Your VeggieFresh verification code is: ${otp}. This code will expire in 1 minutes.`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: `+91${phoneNumber}` // Assuming Indian phone numbers
     });

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,44 +23,56 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   final _otpController = TextEditingController();
   bool _isLoading = false;
   bool _isResending = false;
-  int _resendTimer = 30;
+  int _otpTimerSeconds = 60; // OTP valid for 1 minute
   bool _canResend = false;
   String? _otpErrorMessage;
   bool _isOtpErrorVisible = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _startResendTimer();
+    _startOTPTimer();
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _otpController.dispose();
-    _resendTimer = 0; // Stop the timer
     super.dispose();
   }
 
-  void _startResendTimer() {
+  void _startOTPTimer() {
     setState(() {
       _canResend = false;
-      _resendTimer = 30;
+      _otpTimerSeconds = 60; // Reset to 60 seconds
     });
 
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        if (_resendTimer > 0) {
-          setState(() {
-            _resendTimer--;
-          });
-          _startResendTimer();
-        } else {
-          setState(() {
-            _canResend = true;
-          });
-        }
+    _timer?.cancel(); // Cancel any existing timer
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_otpTimerSeconds > 0) {
+        setState(() {
+          _otpTimerSeconds--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          _canResend = true;
+        });
       }
     });
+  }
+
+  String _formatTimer(int seconds) {
+    final minutes = seconds ~/ 60;
+    final secs = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
   void _showOtpError(String message) {
@@ -178,7 +191,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
         });
         
         // Restart the timer
-        _startResendTimer();
+        _startOTPTimer();
       }
     } catch (e) {
       if (!mounted) return;
@@ -186,21 +199,45 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       // Extract meaningful error message
       final errorMessage = ErrorHandler.extractErrorMessage(e);
       
+      // Check if it's a rate limiting error (429 status)
+      final isRateLimitError = e.toString().contains('429') || 
+                              errorMessage.toLowerCase().contains('wait') ||
+                              errorMessage.toLowerCase().contains('retry');
+      
       // Clear any existing snackbars before showing new one
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.error_outline, color: Colors.white),
+              Icon(
+                isRateLimitError ? Icons.timer_outlined : Icons.error_outline,
+                color: Colors.white,
+              ),
               const SizedBox(width: 12),
               Expanded(child: Text(errorMessage)),
             ],
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: isRateLimitError ? Colors.orange : Colors.red,
           duration: const Duration(seconds: 4),
         ),
       );
+      
+      // If rate limited, extract retry time and update timer if available
+      if (isRateLimitError) {
+        // Try to extract retry time from error message
+        final retryMatch = RegExp(r'(\d+)\s*seconds?').firstMatch(errorMessage);
+        if (retryMatch != null) {
+          final retrySeconds = int.tryParse(retryMatch.group(1) ?? '');
+          if (retrySeconds != null && retrySeconds > 0) {
+            setState(() {
+              _otpTimerSeconds = retrySeconds;
+              _canResend = false;
+            });
+            _startOTPTimer();
+          }
+        }
+      }
     } finally {
       if (mounted) {
         setState(() => _isResending = false);
@@ -262,7 +299,50 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
+              
+              // OTP Timer Display
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: _otpTimerSeconds > 0 
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                      : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _otpTimerSeconds > 0
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                        : Colors.grey[300]!,
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _otpTimerSeconds > 0 ? Icons.timer : Icons.timer_off,
+                      color: _otpTimerSeconds > 0
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[600],
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _otpTimerSeconds > 0
+                          ? 'OTP expires in ${_formatTimer(_otpTimerSeconds)}'
+                          : 'OTP expired',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _otpTimerSeconds > 0
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
               
               // OTP input field
               PinCodeTextField(
@@ -384,10 +464,14 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.timer, size: 20, color: Theme.of(context).colorScheme.primary),
+                              Icon(
+                                Icons.timer_outlined,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                               const SizedBox(width: 8),
                               Text(
-                                'Resend in $_resendTimer seconds',
+                                'Resend in ${_formatTimer(_otpTimerSeconds)}',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.w600,

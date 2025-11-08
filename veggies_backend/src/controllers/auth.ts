@@ -328,9 +328,27 @@ export const sendOTPToPhone = async (req: Request, res: Response) => {
   try {
     const { phone } = sendOTPSchema.parse(req.body);
     
+    // Rate limiting: Check if OTP was sent recently (within last 60 seconds)
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+    const recentOTP = await OTP.findOne({
+      phone,
+      createdAt: { $gte: oneMinuteAgo }
+    }).sort({ createdAt: -1 });
+    
+    if (recentOTP) {
+      const timeSinceLastOTP = Math.floor((Date.now() - recentOTP.createdAt.getTime()) / 1000);
+      const remainingTime = 60 - timeSinceLastOTP;
+      
+      return res.status(429).json({
+        success: false,
+        error: `Please wait ${remainingTime} seconds before requesting a new OTP`,
+        retryAfter: remainingTime
+      });
+    }
+    
     // Generate 4-digit OTP
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    const expiresAt = new Date(Date.now() + 60 * 1000); // 1 minute from now
     
     // Invalidate any existing OTPs for this phone
     await OTP.updateMany(
@@ -357,7 +375,8 @@ export const sendOTPToPhone = async (req: Request, res: Response) => {
     
     res.json({
       success: true,
-      message: 'OTP sent successfully'
+      message: 'OTP sent successfully',
+      expiresIn: 60 // OTP expires in 60 seconds
     });
   } catch (error) {
     logger.error('Send OTP error:', error);
