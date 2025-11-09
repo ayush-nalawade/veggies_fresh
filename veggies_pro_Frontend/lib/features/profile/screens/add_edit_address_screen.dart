@@ -112,13 +112,22 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
       if (!mounted) return;
       
+      // Show success message
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(widget.address == null ? 'Address added successfully' : 'Address updated successfully'),
           backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
         ),
       );
-      context.pop(true); // Return true to indicate success
+      
+      // Wait a moment for the snackbar to be visible, then pop
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (mounted) {
+        context.pop(true); // Return true to indicate success
+      }
     } catch (e) {
       if (!mounted) return;
       

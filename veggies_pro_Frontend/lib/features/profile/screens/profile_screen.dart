@@ -169,12 +169,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _user!.name,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
-        Text(
-          _user!.email,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-        if (_user!.phone != null) ...[
+        if (_user!.email != null && _user!.email!.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            _user!.email!,
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ],
+        if (_user!.phone != null && _user!.phone!.isNotEmpty) ...[
           const SizedBox(height: 4),
           Text(
             _user!.phone!,
@@ -193,8 +195,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           title: 'Edit Profile',
           subtitle: 'Update your personal information',
           onTap: () async {
-            final result = await context.push<bool>('/profile/edit', extra: _user);
-            if (result == true) {
+            await context.push<bool>('/profile/edit', extra: _user);
+            // Always reload profile when returning from edit screen
+            // This ensures we show the latest data even if result is not properly passed
+            if (mounted) {
               _loadProfile();
             }
           },

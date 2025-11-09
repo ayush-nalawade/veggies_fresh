@@ -3,7 +3,7 @@ import 'address.dart';
 class User {
   final String id;
   final String name;
-  final String email;
+  final String? email;
   final String? phone;
   final String? avatarUrl;
   final String role;
@@ -14,7 +14,7 @@ class User {
   User({
     required this.id,
     required this.name,
-    required this.email,
+    this.email,
     this.phone,
     this.avatarUrl,
     required this.role,
@@ -27,7 +27,7 @@ class User {
     return User(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
+      email: json['email']?.toString(),
       phone: json['phone']?.toString(),
       avatarUrl: json['avatarUrl']?.toString(),
       role: json['role']?.toString() ?? 'user',
@@ -43,7 +43,7 @@ class User {
     return {
       'id': id,
       'name': name,
-      'email': email,
+      if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
       if (avatarUrl != null) 'avatarUrl': avatarUrl,
       'role': role,

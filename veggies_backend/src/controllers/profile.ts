@@ -7,7 +7,11 @@ import { logger } from '../utils/logger';
 // Validation schemas
 const updateProfileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
-  email: z.string().email('Invalid email format').optional(),
+  email: z.union([
+    z.string().email('Invalid email format'),
+    z.null(),
+    z.literal('')
+  ]).optional(),
   phone: z.string().min(10, 'Phone number must be at least 10 digits').optional(),
 });
 
@@ -54,24 +58,75 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const updateData = updateProfileSchema.parse(req.body);
     
-    // Check if email is being updated and if it's already taken
-    if (updateData.email) {
-      const existingUser = await User.findOne({ 
-        email: updateData.email, 
-        _id: { $ne: req.user!._id } 
-      });
-      
-      if (existingUser) {
-        return res.status(400).json({
+    // Build update object
+    const setData: any = {};
+    const unsetData: any = {};
+    
+    // Handle name
+    if (updateData.name !== undefined) {
+      if (updateData.name !== null && updateData.name.trim() !== '') {
+        setData.name = updateData.name.trim();
+      }
+    }
+    
+    // Handle email
+    if (updateData.email !== undefined) {
+      if (updateData.email !== null && updateData.email.trim() !== '') {
+        // Check if email is already taken
+        const existingUser = await User.findOne({ 
+          email: updateData.email.trim(), 
+          _id: { $ne: req.user!._id } 
+        });
+        
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            error: 'Email already exists'
+          });
+        }
+        setData.email = updateData.email.trim();
+      } else {
+        // Remove email if it's null or empty
+        unsetData.email = '';
+      }
+    }
+    
+    // Handle phone
+    if (updateData.phone !== undefined) {
+      if (updateData.phone !== null && updateData.phone.trim() !== '') {
+        setData.phone = updateData.phone.trim();
+      }
+    }
+
+    // Build the update query
+    const updateQuery: any = {};
+    if (Object.keys(setData).length > 0) {
+      updateQuery.$set = setData;
+    }
+    if (Object.keys(unsetData).length > 0) {
+      updateQuery.$unset = unsetData;
+    }
+
+    // Only update if there's something to update
+    if (Object.keys(updateQuery).length === 0) {
+      // Just return the current user
+      const user = await User.findById(req.user!._id).select('-password');
+      if (!user) {
+        return res.status(404).json({
           success: false,
-          error: 'Email already exists'
+          error: 'User not found'
         });
       }
+      return res.json({
+        success: true,
+        data: user,
+        message: 'Profile updated successfully'
+      });
     }
 
     const user = await User.findByIdAndUpdate(
       req.user!._id,
-      { $set: updateData },
+      updateQuery,
       { new: true, select: '-password' }
     );
 

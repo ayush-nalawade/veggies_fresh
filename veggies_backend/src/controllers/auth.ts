@@ -487,14 +487,20 @@ export const completeProfile = async (req: Request, res: Response) => {
       });
     }
     
-    // Create new user
-    const user = await User.create({
+    // Create new user - only include email if provided
+    const userData: any = {
       name,
-      email,
       phone: decoded.phone,
       isPhoneVerified: true,
       addresses: []
-    });
+    };
+    
+    // Only add email if it's provided and not empty
+    if (email && email.trim().length > 0) {
+      userData.email = email.trim();
+    }
+    
+    const user = await User.create(userData);
     
     const { accessToken, refreshToken } = generateTokens(user._id.toString());
     

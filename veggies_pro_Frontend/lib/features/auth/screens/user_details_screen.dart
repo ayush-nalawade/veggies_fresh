@@ -232,13 +232,13 @@ class _UserDetailsScreenState extends ConsumerState<UserDetailsScreen> {
                 const SizedBox(height: 16),
                 
                 // Skip email option
-                TextButton(
-                  onPressed: _isLoading ? null : () {
-                    _emailController.clear();
-                    _completeProfile();
-                  },
-                  child: const Text('Skip Email (Optional)'),
-                ),
+                // TextButton(
+                //   onPressed: _isLoading ? null : () {
+                //     _emailController.clear();
+                //     _completeProfile();
+                //   },
+                //   child: const Text('Skip Email (Optional)'),
+                // ),
                 const Spacer(),
               ],
             ),

@@ -216,9 +216,34 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         final orderData = orderResponse.data['data'];
         
         if (_paymentMethod == 'cod') {
-          // COD order - show success message
-          _showSuccessMessage('Order placed successfully! You will pay on delivery.');
-          context.go('/orders');
+          // COD order - show success message first
+          if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white, size: 20),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Order placed successfully! You will pay on delivery.',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            // Wait for snackbar to be visible before navigating
+            await Future.delayed(const Duration(milliseconds: 800));
+          }
+          if (mounted) {
+            context.go('/orders');
+          }
         } else {
           // Razorpay payment
           await _processRazorpayPayment(orderData);

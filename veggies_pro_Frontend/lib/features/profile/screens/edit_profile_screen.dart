@@ -25,7 +25,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void initState() {
     super.initState();
     _nameController.text = widget.user.name;
-    _emailController.text = widget.user.email;
+    _emailController.text = widget.user.email ?? '';
     _phoneController.text = widget.user.phone ?? '';
   }
 
@@ -45,18 +45,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     try {
       await ProfileService().updateProfile(
         name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
+        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
         phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
       );
 
       if (mounted) {
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile updated successfully'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
-        context.pop(true); // Return true to indicate success
+        // Wait a moment for the snackbar to be visible, then pop
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          context.pop(true); // Return true to indicate success
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -171,21 +177,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Email Field
+            // Email Field (Optional)
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                labelText: 'Email (Optional)',
                 prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Email is required';
-                }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
-                  return 'Please enter a valid email';
+                if (value != null && value.trim().isNotEmpty) {
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
+                    return 'Please enter a valid email';
+                  }
                 }
                 return null;
               },
