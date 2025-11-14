@@ -77,12 +77,15 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     
     // Check if area is selected
     if (_selectedArea == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a delivery area'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger != null) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Please select a delivery area'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -112,18 +115,17 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
       if (!mounted) return;
       
-      // Show success message
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(widget.address == null ? 'Address added successfully' : 'Address updated successfully'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      
-      // Wait a moment for the snackbar to be visible, then pop
-      await Future.delayed(const Duration(milliseconds: 500));
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger != null) {
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(widget.address == null ? 'Address added successfully' : 'Address updated successfully'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
       
       if (mounted) {
         context.pop(true); // Return true to indicate success

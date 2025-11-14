@@ -96,8 +96,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ]);
       _calculateDeliveryFee();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load data: ${e.toString()}'),
             backgroundColor: Colors.red,
@@ -217,9 +218,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         
         if (_paymentMethod == 'cod') {
           // COD order - show success message first
-          if (mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
+          final messenger = ScaffoldMessenger.maybeOf(context);
+          if (messenger != null) {
+            messenger.clearSnackBars();
+            messenger.showSnackBar(
               const SnackBar(
                 content: Row(
                   children: [
@@ -238,8 +240,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 behavior: SnackBarBehavior.floating,
               ),
             );
-            // Wait for snackbar to be visible before navigating
-            await Future.delayed(const Duration(milliseconds: 800));
           }
           if (mounted) {
             context.go('/orders');
@@ -290,8 +290,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   /// Show success message
   void _showSuccessMessage(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger != null) {
+      messenger.showSnackBar(
         SnackBar(
           content: Text(message),
           backgroundColor: Colors.green,
@@ -303,8 +305,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   /// Show error message
   void _showErrorMessage(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger != null) {
+      messenger.showSnackBar(
         SnackBar(
           content: Text(message),
           backgroundColor: Colors.red,

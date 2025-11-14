@@ -42,7 +42,8 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        messenger?.showSnackBar(
           SnackBar(
             content: Text('Failed to send OTP: ${e.toString()}'),
             backgroundColor: Colors.red,

@@ -51,7 +51,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       if (mounted) {
         // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        messenger?.showSnackBar(
           const SnackBar(
             content: Text('Profile updated successfully'),
             backgroundColor: Colors.green,
@@ -65,8 +66,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to update profile: $e'),
             backgroundColor: Colors.red,
@@ -141,8 +143,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       child: IconButton(
                         onPressed: () {
                           // TODO: Implement image picker
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                          final messenger = ScaffoldMessenger.maybeOf(context);
+                          if (mounted && messenger != null) {
+                            messenger.showSnackBar(
                               const SnackBar(content: Text('Image picker not implemented yet')),
                             );
                           }

@@ -16,8 +16,9 @@ class ErrorHandler {
     }
     
     // For other errors, show appropriate message
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger != null) {
+      messenger.showSnackBar(
         SnackBar(
           content: Text(extractErrorMessage(error)),
           backgroundColor: Colors.red,
@@ -102,4 +103,3 @@ class ErrorHandler {
     return 'An unexpected error occurred. Please try again.';
   }
 }
-

@@ -41,15 +41,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> _logout() async {
     const storage = FlutterSecureStorage();
     await storage.deleteAll();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger != null) {
+      messenger.showSnackBar(
         const SnackBar(
           content: Text('Logged out successfully'),
           backgroundColor: Colors.green,
         ),
       );
-      context.go('/auth/phone-login');
     }
+    context.go('/auth/phone-login');
   }
 
   @override
@@ -220,8 +222,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           title: 'Notifications',
           subtitle: 'Manage your notification preferences',
           onTap: () {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
+            final messenger = ScaffoldMessenger.maybeOf(context);
+            if (mounted && messenger != null) {
+              messenger.showSnackBar(
                 const SnackBar(content: Text('Notifications feature coming soon')),
               );
             }

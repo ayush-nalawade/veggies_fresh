@@ -163,6 +163,14 @@ class PaymentService {
     return 'VeggieFresh Customer';
   }
 
+  ScaffoldMessengerState? _getMessenger() {
+    final ctx = _currentContext;
+    if (ctx != null && ctx.mounted) {
+      return ScaffoldMessenger.maybeOf(ctx);
+    }
+    return null;
+  }
+
   /// Handle successful payment
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     try {
@@ -249,15 +257,14 @@ class PaymentService {
   void _handleExternalWallet(ExternalWalletResponse response) {
     print('External wallet selected: ${response.walletName}');
     
-    if (_currentContext != null && _currentContext!.mounted) {
-      ScaffoldMessenger.of(_currentContext!).showSnackBar(
-        SnackBar(
-          content: Text('External wallet selected: ${response.walletName}'),
-          backgroundColor: Colors.blue,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
+    final messenger = _getMessenger();
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text('External wallet selected: ${response.walletName}'),
+        backgroundColor: Colors.blue,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   /// Verify payment with backend
@@ -311,7 +318,8 @@ class PaymentService {
   void _showSuccessMessage() {
     if (_currentContext == null || !_currentContext!.mounted) return;
 
-    ScaffoldMessenger.of(_currentContext!).showSnackBar(
+    final messenger = _getMessenger();
+    messenger?.showSnackBar(
       const SnackBar(
         content: Text('Payment successful! Order placed successfully.'),
         backgroundColor: Colors.green,
@@ -324,7 +332,8 @@ class PaymentService {
   void _showErrorMessage(String message) {
     if (_currentContext == null || !_currentContext!.mounted) return;
 
-    ScaffoldMessenger.of(_currentContext!).showSnackBar(
+    final messenger = _getMessenger();
+    messenger?.showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
@@ -341,4 +350,3 @@ class PaymentService {
     );
   }
 }
-

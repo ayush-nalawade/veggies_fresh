@@ -201,8 +201,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
       }
     } catch (e) {
       print('Orders loading error: $e'); // Debug log
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load orders: ${e.toString()}'),
             backgroundColor: Colors.red,

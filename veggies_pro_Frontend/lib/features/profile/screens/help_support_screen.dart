@@ -147,7 +147,8 @@ class HelpSupportScreen extends StatelessWidget {
               title: 'Order Help',
               subtitle: 'Track orders, returns, and refunds',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
+                final messenger = ScaffoldMessenger.maybeOf(context);
+                messenger?.showSnackBar(
                   const SnackBar(
                     content: Text('Navigate to Orders page for order-related help'),
                   ),
@@ -162,7 +163,8 @@ class HelpSupportScreen extends StatelessWidget {
               title: 'Payment Help',
               subtitle: 'Payment methods and issues',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
+                final messenger = ScaffoldMessenger.maybeOf(context);
+                messenger?.showSnackBar(
                   const SnackBar(
                     content: Text('We accept all major credit/debit cards, UPI, and digital wallets'),
                   ),
@@ -176,7 +178,8 @@ class HelpSupportScreen extends StatelessWidget {
               title: 'Delivery Help',
               subtitle: 'Delivery areas, timings, and charges',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
+                final messenger = ScaffoldMessenger.maybeOf(context);
+                messenger?.showSnackBar(
                   const SnackBar(
                     content: Text('We deliver to Kandivali(W) and Malad(W). Free delivery on orders above ₹500'),
                   ),

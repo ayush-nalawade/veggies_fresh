@@ -33,8 +33,9 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load categories: ${e.toString()}'),
             backgroundColor: Colors.red,

@@ -28,8 +28,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
       final addresses = await ProfileService().getAddresses();
       setState(() => _addresses = addresses);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load addresses: $e'),
             backgroundColor: Colors.red,
@@ -66,8 +67,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
       try {
         await ProfileService().deleteAddress(address.id!);
         _loadAddresses();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        if (mounted && messenger != null) {
+          messenger.showSnackBar(
             const SnackBar(
               content: Text('Address deleted successfully'),
               backgroundColor: Colors.green,
@@ -75,8 +77,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
           );
         }
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        if (mounted && messenger != null) {
+          messenger.showSnackBar(
             SnackBar(
               content: Text('Failed to delete address: $e'),
               backgroundColor: Colors.red,
@@ -93,8 +96,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
     try {
       await ProfileService().setDefaultAddress(address.id!);
       _loadAddresses();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Default address updated'),
             backgroundColor: Colors.green,
@@ -102,8 +106,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
         );
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to set default address: $e'),
             backgroundColor: Colors.red,

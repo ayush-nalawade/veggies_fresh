@@ -14,7 +14,8 @@ class AuthUtils {
       
       // Show logout message
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        messenger?.showSnackBar(
           const SnackBar(
             content: Text('Session expired. Please login again.'),
             backgroundColor: Colors.orange,
@@ -69,7 +70,8 @@ class AuthUtils {
     
     // For other errors, show appropriate message
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.showSnackBar(
         SnackBar(
           content: Text('Authentication error: ${error.toString()}'),
           backgroundColor: Colors.red,

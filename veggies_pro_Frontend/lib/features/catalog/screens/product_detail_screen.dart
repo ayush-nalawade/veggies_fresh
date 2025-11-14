@@ -61,8 +61,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load product: ${e.toString()}'),
             backgroundColor: Colors.red,
@@ -100,9 +101,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        // Clear any existing snackbars
-        ScaffoldMessenger.of(context).clearSnackBars();
-        
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        if (messenger == null) return;
+
         // Format quantity display for snackbar
         String qtyDisplay;
         if (_hasTieredWeightPricing) {
@@ -114,8 +115,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         } else {
           qtyDisplay = '${_quantity} $unit';
         }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
+
+        messenger.clearSnackBars();
+        if (!mounted) return;
+
+        messenger.showSnackBar(
           SnackBar(
             content: Row(
               children: [
@@ -130,7 +134,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ],
             ),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+            duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -149,9 +153,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         errorMessage = 'Invalid unit selected';
       }
       
-      // Clear any existing snackbars
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger == null) return;
+
+      messenger.clearSnackBars();
+
+      if (!mounted) return;
+
+      messenger.showSnackBar(
         SnackBar(
           content: Row(
             children: [

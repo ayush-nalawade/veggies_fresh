@@ -48,8 +48,9 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
         }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (mounted && messenger != null) {
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Failed to load products: ${e.toString()}'),
             backgroundColor: Colors.red,

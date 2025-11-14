@@ -95,10 +95,10 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
 
   Future<void> _verifyOTP() async {
     if (_otpController.text.length != 4) {
-      if (mounted) {
-        // Clear any existing snackbars
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger != null) {
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Please enter a valid 4-digit OTP'),
             backgroundColor: Colors.red,
@@ -165,23 +165,25 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       });
 
       if (!mounted) return;
-
+      
       if (response.statusCode == 200) {
-        // Clear any existing snackbars before showing new one
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 12),
-                Expanded(child: Text('OTP sent successfully to your phone')),
-              ],
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        if (messenger != null) {
+          messenger.clearSnackBars();
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 12),
+                  Expanded(child: Text('OTP sent successfully to your phone')),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
             ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
-        );
+          );
+        }
         
         // Clear any previous OTP errors
         setState(() {
@@ -204,24 +206,26 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                               errorMessage.toLowerCase().contains('wait') ||
                               errorMessage.toLowerCase().contains('retry');
       
-      // Clear any existing snackbars before showing new one
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                isRateLimitError ? Icons.timer_outlined : Icons.error_outline,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Text(errorMessage)),
-            ],
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger != null) {
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(
+                  isRateLimitError ? Icons.timer_outlined : Icons.error_outline,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(errorMessage)),
+              ],
+            ),
+            backgroundColor: isRateLimitError ? Colors.orange : Colors.red,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: isRateLimitError ? Colors.orange : Colors.red,
-          duration: const Duration(seconds: 4),
-        ),
-      );
+        );
+      }
       
       // If rate limited, extract retry time and update timer if available
       if (isRateLimitError) {

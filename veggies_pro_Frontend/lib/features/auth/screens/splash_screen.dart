@@ -70,7 +70,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   await storage.deleteAll();
                   print('All tokens cleared!');
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    final messenger = ScaffoldMessenger.maybeOf(context);
+                    messenger?.showSnackBar(
                       const SnackBar(
                         content: Text('Tokens cleared! Restarting app...'),
                         backgroundColor: Colors.green,
