@@ -1,0 +1,32 @@
+const twilio = require('twilio');
+const { logger } = require('./logger');
+const dotenv = require('dotenv');
+
+dotenv.config();
+const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+);
+
+const sendOTP = async (phoneNumber, otp) => {
+    try {
+        // const message = await client.messages.create({
+        //   body: `Your VeggieFresh verification code is: ${otp}. This code will expire in 1 minutes.`,
+        //   from: process.env.TWILIO_PHONE_NUMBER,
+        //   to: `+91${phoneNumber}` // Assuming Indian phone numbers
+        // });
+
+        // logger.info(`OTP sent to ${phoneNumber}, Message SID: ${message.sid}`);
+        console.log("otp sent ::::::::", otp);
+        return true;
+    } catch (error) {
+        logger.error('Failed to send OTP:', error);
+        return false;
+    }
+};
+
+const generateOTP = () => {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+};
+
+module.exports = { sendOTP, generateOTP };

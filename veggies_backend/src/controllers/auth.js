@@ -1,0 +1,561 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const { z } = require('zod');
+const { User } = require('../models/User');
+const { OTP } = require('../models/OTP');
+const { logger } = require('../utils/logger');
+const { sendOTP, generateOTP } = require('../utils/twilio');
+
+// Validation schemas
+const registerSchema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email format'),
+    phone: z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+    password: z.string().min(6, 'Password must be at least 6 characters')
+});
+
+const loginSchema = z.object({
+    email: z.string().email('Invalid email format'),
+    password: z.string().min(1, 'Password is required')
+});
+
+const sendOTPSchema = z.object({
+    phone: z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
+});
+
+const verifyOTPSchema = z.object({
+    phone: z.string().regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+    otp: z.string().regex(/^[0-9]{4}$/, 'OTP must be exactly 4 digits')
+});
+
+const completeProfileSchema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email format').optional(),
+    city: z.string().min(1, 'City is required')
+});
+
+// Generate JWT tokens — tokenVersion is embedded so logout can invalidate them
+const generateTokens = (userId, tokenVersion) => {
+    const accessToken = jwt.sign(
+        { userId, tokenVersion },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+    );
+
+    const refreshToken = jwt.sign(
+        { userId, tokenVersion },
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+        { expiresIn: '30d' }
+    );
+
+    return { accessToken, refreshToken };
+};
+
+const register = async (req, res) => {
+    try {
+        const { name, email, phone, password } = registerSchema.parse(req.body);
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                error: 'User already exists with this email'
+            });
+        }
+
+        // Hash password
+        const saltRounds = 12;
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        // Create user
+        const user = await User.create({
+            name,
+            email,
+            phone,
+            passwordHash,
+            addresses: []
+        });
+
+        const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.tokenVersion);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    avatarUrl: user.avatarUrl,
+                    role: user.role
+                },
+                accessToken,
+                refreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Register error:', error);
+        res.status(400).json({
+            success: false,
+            error: error instanceof z.ZodError ? 'Validation error' : 'Registration failed'
+        });
+    }
+};
+
+const login = async (req, res) => {
+    try {
+        const { email, password } = loginSchema.parse(req.body);
+
+        // Find user
+        const user = await User.findOne({ email });
+        if (!user || !user.passwordHash) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid credentials'
+            });
+        }
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        if (!isValidPassword) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid credentials'
+            });
+        }
+
+        const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.tokenVersion);
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    avatarUrl: user.avatarUrl,
+                    role: user.role
+                },
+                accessToken,
+                refreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Login error:', error);
+        res.status(400).json({
+            success: false,
+            error: error instanceof z.ZodError ? 'Validation error' : 'Login failed'
+        });
+    }
+};
+
+const getGoogleAuthUrl = (req, res) => {
+    try {
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+            `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
+            `redirect_uri=${process.env.FRONTEND_URL}/auth/google/callback&` +
+            `scope=profile email&` +
+            `response_type=code&` +
+            `access_type=offline`;
+
+        res.json({
+            success: true,
+            data: { authUrl }
+        });
+    } catch (error) {
+        logger.error('Google auth URL error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to generate Google auth URL'
+        });
+    }
+};
+
+const refreshToken = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                error: 'Refresh token is required'
+            });
+        }
+
+        // Verify refresh token using the refresh secret
+        const decoded = jwt.verify(
+            refreshToken,
+            process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
+        );
+        const userId = decoded.userId;
+
+        // Check if user still exists and tokenVersion matches
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        // If tokenVersion doesn't match, this refresh token was invalidated by logout
+        if (decoded.tokenVersion !== user.tokenVersion) {
+            return res.status(401).json({
+                success: false,
+                error: 'Token has been invalidated. Please log in again.'
+            });
+        }
+
+        // Generate new tokens
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId, user.tokenVersion);
+
+        res.json({
+            success: true,
+            data: {
+                accessToken,
+                refreshToken: newRefreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Refresh token error:', error);
+        res.status(401).json({
+            success: false,
+            error: 'Invalid refresh token'
+        });
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader?.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                error: 'Authorization token required'
+            });
+        }
+
+        const token = authHeader.substring(7);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Increment tokenVersion — this instantly invalidates ALL existing
+        // access tokens and refresh tokens for this user
+        await User.findByIdAndUpdate(decoded.userId, {
+            $inc: { tokenVersion: 1 }
+        });
+
+        logger.info(`User ${decoded.userId} logged out — tokenVersion incremented`);
+
+        res.json({
+            success: true,
+            message: 'Logged out successfully. All sessions have been invalidated.'
+        });
+    } catch (error) {
+        // Even if token is already expired/invalid, treat logout as successful
+        // so the client always clears its local state
+        logger.warn('Logout with invalid/expired token:', error.message);
+        res.json({
+            success: true,
+            message: 'Logged out successfully.'
+        });
+    }
+};
+
+const googleCallback = async (req, res) => {
+    try {
+        const { code } = req.query;
+
+        if (!code) {
+            return res.status(400).json({
+                success: false,
+                error: 'Authorization code not provided'
+            });
+        }
+
+        // Exchange code for tokens
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                code: code,
+                grant_type: 'authorization_code',
+                redirect_uri: `${process.env.FRONTEND_URL}/auth/google/callback`
+            })
+        });
+
+        const tokens = await tokenResponse.json();
+
+        if (!tokens.access_token) {
+            return res.status(400).json({
+                success: false,
+                error: 'Failed to get access token'
+            });
+        }
+
+        // Get user info from Google
+        const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: { Authorization: `Bearer ${tokens.access_token}` }
+        });
+
+        const googleUser = await userResponse.json();
+
+        // Find or create user
+        let user = await User.findOne({ googleId: googleUser.id });
+
+        if (!user) {
+            // Check if user exists with same email
+            user = await User.findOne({ email: googleUser.email });
+
+            if (user) {
+                // Link Google account to existing user
+                user.googleId = googleUser.id;
+                user.avatarUrl = googleUser.picture;
+                await user.save();
+            } else {
+                // Create new user
+                user = await User.create({
+                    name: googleUser.name,
+                    email: googleUser.email,
+                    googleId: googleUser.id,
+                    avatarUrl: googleUser.picture,
+                    addresses: []
+                });
+            }
+        }
+
+        const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.tokenVersion);
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    avatarUrl: user.avatarUrl,
+                    role: user.role
+                },
+                accessToken,
+                refreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Google callback error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Google authentication failed'
+        });
+    }
+};
+
+// Send OTP to phone number
+const sendOTPToPhone = async (req, res) => {
+    try {
+        const { phone } = sendOTPSchema.parse(req.body);
+
+        // Rate limiting: Check if OTP was sent recently (within last 60 seconds)
+        const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+        const recentOTP = await OTP.findOne({
+            phone,
+            createdAt: { $gte: oneMinuteAgo }
+        }).sort({ createdAt: -1 });
+
+        if (recentOTP) {
+            const timeSinceLastOTP = Math.floor((Date.now() - recentOTP.createdAt.getTime()) / 1000);
+            const remainingTime = 60 - timeSinceLastOTP;
+
+            return res.status(429).json({
+                success: false,
+                error: `Please wait ${remainingTime} seconds before requesting a new OTP`,
+                retryAfter: remainingTime
+            });
+        }
+
+        // Generate 4-digit OTP
+        const otp = generateOTP();
+        const expiresAt = new Date(Date.now() + 60 * 1000); // 1 minute from now
+
+        // Invalidate any existing OTPs for this phone
+        await OTP.updateMany(
+            { phone, isUsed: false },
+            { isUsed: true }
+        );
+
+        // Create new OTP record
+        await OTP.create({
+            phone,
+            otp,
+            expiresAt
+        });
+
+        // Send OTP via Twilio
+        const sent = await sendOTP(phone, otp);
+
+        if (!sent) {
+            return res.status(500).json({
+                success: false,
+                error: 'Failed to send OTP. Please try again.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'OTP sent successfully',
+            expiresIn: 60 // OTP expires in 60 seconds
+        });
+    } catch (error) {
+        logger.error('Send OTP error:', error);
+        res.status(400).json({
+            success: false,
+            error: error instanceof z.ZodError ? 'Invalid phone number format' : 'Failed to send OTP'
+        });
+    }
+};
+
+// Verify OTP and check if user exists
+const verifyOTP = async (req, res) => {
+    try {
+        const { phone, otp } = verifyOTPSchema.parse(req.body);
+
+        // Find valid OTP
+        const otpRecord = await OTP.findOne({
+            phone,
+            otp,
+            isUsed: false,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (!otpRecord) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid or expired OTP'
+            });
+        }
+
+        // Mark OTP as used
+        otpRecord.isUsed = true;
+        await otpRecord.save();
+
+        // Check if user exists
+        const existingUser = await User.findOne({ phone });
+
+        if (existingUser) {
+            // User exists, update phone verification status
+            existingUser.isPhoneVerified = true;
+            await existingUser.save();
+
+            const { accessToken, refreshToken } = generateTokens(existingUser._id.toString(), existingUser.tokenVersion);
+
+            return res.json({
+                success: true,
+                data: {
+                    user: {
+                        id: existingUser._id,
+                        name: existingUser.name,
+                        email: existingUser.email,
+                        phone: existingUser.phone,
+                        avatarUrl: existingUser.avatarUrl,
+                        role: existingUser.role,
+                        isPhoneVerified: existingUser.isPhoneVerified
+                    },
+                    accessToken,
+                    refreshToken,
+                    isNewUser: false
+                }
+            });
+        } else {
+            // New user, return temporary token for profile completion
+            const tempToken = jwt.sign(
+                { phone, temp: true },
+                process.env.JWT_SECRET,
+                { expiresIn: '10m' }
+            );
+
+            return res.json({
+                success: true,
+                data: {
+                    tempToken,
+                    isNewUser: true
+                }
+            });
+        }
+    } catch (error) {
+        logger.error('Verify OTP error:', error);
+        res.status(400).json({
+            success: false,
+            error: error instanceof z.ZodError ? 'Invalid OTP format' : 'OTP verification failed'
+        });
+    }
+};
+
+// Complete user profile for new users
+const completeProfile = async (req, res) => {
+    try {
+        const { name, email, city } = completeProfileSchema.parse(req.body);
+
+        // Verify temp token
+        const authHeader = req.headers.authorization;
+        if (!authHeader?.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                error: 'Authorization token required'
+            });
+        }
+
+        const tempToken = authHeader.substring(7);
+        const decoded = jwt.verify(tempToken, process.env.JWT_SECRET);
+
+        if (!decoded.temp || !decoded.phone) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid temporary token'
+            });
+        }
+
+        // Create new user - only include email if provided
+        const userData = {
+            name,
+            phone: decoded.phone,
+            isPhoneVerified: true,
+            addresses: []
+        };
+
+        // Only add email if it's provided and not empty
+        if (email && email.trim().length > 0) {
+            userData.email = email.trim();
+        }
+
+        const user = await User.create(userData);
+
+        const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.tokenVersion);
+
+        res.status(201).json({
+            success: true,
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    avatarUrl: user.avatarUrl,
+                    role: user.role,
+                    isPhoneVerified: user.isPhoneVerified
+                },
+                accessToken,
+                refreshToken
+            }
+        });
+    } catch (error) {
+        logger.error('Complete profile error:', error);
+        res.status(400).json({
+            success: false,
+            error: error instanceof z.ZodError ? 'Validation error' : 'Profile completion failed'
+        });
+    }
+};
+
+module.exports = { register, login, getGoogleAuthUrl, googleCallback, refreshToken, logout, sendOTPToPhone, verifyOTP, completeProfile };
